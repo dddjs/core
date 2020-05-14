@@ -116,7 +116,7 @@ export class UIMaterial {
 
   getTargetMatrix(obj) {
     if (obj._parent) {
-      return obj._modelMatrix.clone().dot(this.getTargetMatrix(obj._parent))
+      return obj._modelMatrix.clone().rightDot(this.getTargetMatrix(obj._parent))
     }
     return obj._modelMatrix;
   }
@@ -130,7 +130,7 @@ export class UIMaterial {
           }
             break;
           case 'Vmatrix': {
-            this.uploadItem(item, camera._viewMatrix.elements)
+            this.uploadItem(item, camera.viewMatrix.elements)
           }
             break;
           case 'Mmatrix': {

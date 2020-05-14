@@ -41,7 +41,8 @@ export function point2Webgl(pos_x: number, pos_y: number) {
 
 export function fovy(height: number, near: number) {
   //fovy = 360/(pi*atan(2n/(h)))
-  return 2 * 180.0 / (Math.PI * Math.atan((2 * near) / height));
+  // return 2 * 180.0 / (Math.PI * Math.atan((2 * near) / height));
+  return 2 * 180.0 * Math.atan( height/(2 * near) )/ (Math.PI );
 }
 
 

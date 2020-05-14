@@ -3,6 +3,8 @@ import { Object3d } from "../../core/Object3d";
 export class Shape extends Object3d {
   constructor(name: string = 'plan') {
     super(name)
+
+    // console.log(arguments,name)
     this._gemotry.setVertices([
       0, 0, 0,
       0, 0, 0,

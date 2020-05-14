@@ -66,22 +66,14 @@ export class Mat4 extends Base {
     return this;
   }
 
-  mul(mat: number) {
+  mul(a: number) {
     let _ele = this.elements;
 
     _ele.forEach((item, index) => {
-      _ele[index] *= mat;
+      _ele[index] = item*a;
     })
 
     return this;
-  }
-
-  dot(mat: Mat4, isRightHand: boolean = true) {
-    if (isRightHand) {
-      return this.rightDot(mat);
-    } else {
-      return this.leftDot(mat);
-    }
   }
 
   leftDot(mat: Mat4) {
@@ -170,12 +162,7 @@ export class Mat4 extends Base {
       0, 0, 0, 1);
   }
 
-  // 零
-  static get Zero() {
-    return new Mat4(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-  }
-
-  identity() {
+    identity() {
     this.elements = [
       1, 0, 0, 0,
       0, 1, 0, 0,
@@ -183,6 +170,12 @@ export class Mat4 extends Base {
       0, 0, 0, 1]
     return this;
   }
+
+  // 零
+  static get Zero() {
+    return new Mat4(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+  }
+
 
   empty() {
     this.elements = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
@@ -395,27 +388,23 @@ export class Mat4 extends Base {
     var x = 2 / w;
     var y = 2 / h;
 
-    var a = 0;
-    var b = 0;
 
     if (isRightHand) {
       // https://www.cnblogs.com/mazhenyu/p/6401683.html
       // 右手坐标系统 正交投影
       var c = -2 / (far - near);
       var d = - (far + near) / (far - near);
-
     } else {
       // https://blog.csdn.net/gggg_ggg/article/details/45969499
       // 左手坐标系统 正交投影 - LH
       // var c = -1 / (far - near);
       var c = 1 / (far - near);
       var d = - near / (far - near);
-
     }
 
     mat.elements = [
-      x, 0, 0, a,
-      0, y, 0, b,
+      x, 0, 0, 0,
+      0, y, 0, 0,
       0, 0, c, d,
       0, 0, 0, 1
     ]
@@ -424,30 +413,35 @@ export class Mat4 extends Base {
 
   // https://blog.csdn.net/gggg_ggg/article/details/45969499
   // 左手坐标系统 透视投影
-  static perspectiveLRTBNF(left, right, top, bottom, near, far, isRightHand: boolean = false) {
+  static perspectiveLRTBNF(left, right, top, bottom, near, far, isRightHand: boolean = true) {
     let mat = new Mat4();
     var w = right - left;
     var h = top - bottom;
     var x = 2 * near / w;
     var y = 2 * near / h;
 
-    var a = (right + left) / w;
-    var b = (top + bottom) / h;
+    
 
     if (isRightHand) {
       // https://www.cnblogs.com/mazhenyu/p/6401683.html
       // 右手坐标系统 透视投影
+      var a = (right + left) / w;
+      var b = (top + bottom) / h;
       var c = -(far + near) / (far - near);
       var d = - 2 * far * near / (far - near);
       var e = -1;
+
+      
     } else {
       // https://blog.csdn.net/gggg_ggg/article/details/45969499
       // 左手坐标系统 透视投影
-      a = -(right + left) / w;
-      b = -(top + bottom) / h;
+      var a = -(right + left) / w;
+      var b = -(top + bottom) / h;
       var c = far / (far - near);
       var d = - far * near / (far - near);
       var e = 1;
+
+      
     }
 
     mat.elements = [
@@ -456,12 +450,13 @@ export class Mat4 extends Base {
       0, 0, c, d,
       0, 0, e, 0
     ];
+    
     return mat;
   }
 
   // https://blog.csdn.net/gggg_ggg/article/details/45969499
   // 左手坐标系统 透视投影
-  static perspectiveWHNF(w: number = 1, h: number = 1, near: number = 1, far: number = 1000, isRightHand: boolean = false) {
+  static perspectiveWHNF(w: number = 1, h: number = 1, near: number = 1, far: number = 1000, isRightHand: boolean = true) {
     let mat = new Mat4();
 
     var x = 2 * near / w;
@@ -490,9 +485,9 @@ export class Mat4 extends Base {
 
   // https://blog.csdn.net/gggg_ggg/article/details/45969499
   // 左手坐标系统 透视投影
-  static perspective(fovy: number = 45, aspect: number = 1, near: number = 0.1, far: number = 1000, isRightHand: boolean = false) {
+  static perspective(fovy: number = 45, aspect: number = 1, near: number = 0.1, far: number = 1000, isRightHand: boolean = true) {
     let mat = new Mat4();
-    let f = Math.tan(2.0 / DEG2RAD(fovy));
+    let f =1.0 / Math.tan(DEG2RAD(fovy)/2.0);
 
     // cot(fov/2)/aspect = 2N/w = 2N/(h*aspect)
     // tan(2/fov) = 2N/h
@@ -504,8 +499,10 @@ export class Mat4 extends Base {
       var d = - 2 * far * near / (far - near);
       var e = -1;
     } else {
+      // var c = (far + near)/ (far - near);
       var c = far / (far - near);
-      var d = -  far * near / (far - near);
+      // var d = 2 * far * near / (far - near);
+      var d = far * near / (far - near);
       var e = 1;
     }
 
@@ -520,6 +517,7 @@ export class Mat4 extends Base {
     return mat;
   }
 
+  // 视图矩阵作用一句话简明表达就是世界坐标系转换到摄像机坐标系，所以又叫 Camera矩阵
   // 这个矩阵的推导方式也不止一种啦，得到的最终矩阵也未必相同的。总之它是不固定的，使用哪种推导过程要根据你的已知参数是什么来决定。不过很多库都有封装成类，而不是单一的函数。如果要开发3D项目，这个类是必封装的东西，要不然代码会凌乱死。
   static view(eye: Vec3 = new Vec3(0, 0, 0), target: Vec3 = new Vec3(0, 0, -1), up: Vec3 = new Vec3(0, 1, 0), isRightHand: boolean = true) {
     // https://www.cnblogs.com/wbaoqing/p/5422974.html
@@ -547,7 +545,7 @@ export class Mat4 extends Base {
 
       let VY = NZ.clone().cross(UX.x, UX.y, UX.z);
 
-      // 右手旋转的逆矩阵
+      // // 右手旋转的逆矩阵, 正交矩阵的逆矩阵就是就是它的转置矩阵
       var r = new Mat4(
         UX.x, UX.y, UX.z, 0,
         VY.x, VY.y, VY.z, 0,
@@ -555,7 +553,9 @@ export class Mat4 extends Base {
         0.0, 0.0, 0.0, 1.0
       )
 
-      // 右手平移的逆矩阵
+
+
+      // 右手平移的逆矩阵, 正交矩阵的逆矩阵就是就是它的转置矩阵
       var t = new Mat4(
         1.0, 0.0, 0.0, -eye.x,
         0.0, 1.0, 0.0, -eye.y,
@@ -563,7 +563,8 @@ export class Mat4 extends Base {
         0, 0, 0, 1.0,
       )
 
-      return r.dot(t);
+      return t.rightDot(r)
+
     } else {
       // 视线方向为 z 轴正方向， 
       let zAxis = target.clone().sub(eye.x, eye.y, eye.z);
@@ -590,13 +591,13 @@ export class Mat4 extends Base {
         -eye.x, -eye.y, -eye.z, 1.0,
       )
 
-      return t.dot(r);
+      return t.leftDot(r)
     }
   }
 
   static translation(tx: number, ty: number, tz: number, isRightHand: boolean = true) {
     if (isRightHand) {
-      // 右：右坐标系，右乘
+      // 右：右坐标系，右乘，列向量存储
       return new Mat4(
         1, 0, 0, tx,
         0, 1, 0, ty,
@@ -604,7 +605,7 @@ export class Mat4 extends Base {
         0, 0, 0, 1)
     }
 
-    // 左：左坐标系，左乘
+    // 左：左坐标系，左乘， 行向量存储
     return new Mat4(
       1, 0, 0, 0,
       0, 1, 0, 0,
@@ -619,21 +620,21 @@ export class Mat4 extends Base {
     if (x > 0) {
       return new Mat4(
         1, 0, 0, 0,
-        0, cos, -r * sin, 0,
-        0, r * sin, cos, 0,
+        0, cos, r * sin, 0,
+        0, -r * sin, cos, 0,
         0, 0, 0, 1
       )
     } else if (y > 0) {
       return new Mat4(
-        cos, 0, r * sin, 0,
+        cos, 0, -r * sin, 0,
         0, 1, 0, 0,
-        -r * sin, 0, cos, 0,
+        r * sin, 0, cos, 0,
         0, 0, 0, 1
       )
     } else if (z > 0) {
       return new Mat4(
-        cos, -r * sin, 0, 0,
-        r * sin, cos, 0, 0,
+        cos, r * sin, 0, 0,
+        -r * sin, cos, 0, 0,
         0, 0, 1, 0,
         0, 0, 0, 1
       )

@@ -74,11 +74,13 @@ export class UICanvas extends Base {
     this.canvas.setAttribute('width', `${this.width}`);
     this.canvas.setAttribute('height', `${this.height}`);
 
+    // console.log('buinding rect', clientRect)
+
     return clientRect;
   }
 
   resize() {
-    window.addEventListener('resize', () => this.boundingRect)
+    window.addEventListener('resize', () => this.boundingRect())
   }
 
   get gl() {

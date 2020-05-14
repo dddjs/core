@@ -32,7 +32,7 @@ var mapMaterial = new DDD.UITextureMaterial({
 
 var obj = new DDD.Plane();
 // obj.scaling(0.2, 0.2, 1.0);
-// obj.setPosition(-.8, .8, 0)
+obj.setPosition(0, 0, 0)
 obj._material = new DDD.UIVideoMaterial({
   dynamic: true,
   autoPlay: true,
@@ -49,31 +49,32 @@ videoBtn.addEventListener('click', function () {
   }
 })
 
-var center = new DDD.Shape(1, 1, .1, .1, "_cener_");
+var center = new DDD.Shape("_cener_");
 center._material = colorMaterial;
-center.add(obj);
 // render.addRenderObject(center)
 var scene = new DDD.UIScene();
 scene.add(center)
 
 
 var box = new DDD.Box('box');
+
 box.scaling(0.2, 0.2, 0.2)
 // box.rotateX(0.25)
 // box.rotateY(0.25)
-box.setPosition(.8, .8, 0)
+box.setPosition(1, 1, 0)
 // box.lookAt(.8, .8, 1)
 box._material = new DDD.UIMaterial({});
 // render.addRenderObject(box);
 // box._material.isLineMode = false;
 
-var cubeMap = new DDD.UIShaderMaterial({});
+
 var box5 = new DDD.Box('box5');
+var cubeMap = new DDD.UIShaderMaterial({});
 box5._material = cubeMap
 box5.scaling(0.2, 0.2, 0.2);
 // box5.rotateX(0.25);
 // box5.rotateY(0.25);
-box5.setPosition(-.8, -.8, 0)
+box5.setPosition(-1, -1, 0)
 // box5.lookAt(-.8, -.8, 1)
 
 new DDD.ImagesLoaded([
@@ -138,22 +139,22 @@ axis._material = new DDD.UIMaterial({});
 axis._material.isLineMode = true;
 
 var axis1 = new DDD.AxesHelper('a1');
-axis1.scaling(2, 2, 2)
+axis1.scaling(4, 4, 4)
 axis1._material = new DDD.UIMaterial({});
 axis1._material.isLineMode = true;
 
 var axis2 = new DDD.AxesHelper('a2');
-axis2.scaling(2, 2, 2)
+axis2.scaling(4, 4, 4)
 axis2._material = new DDD.UIMaterial({});
 axis2._material.isLineMode = true;
 
 var axis3 = new DDD.AxesHelper('a3');
-axis3.scaling(2, 2, 2)
+axis3.scaling(4, 4, 4)
 axis3._material = new DDD.UIMaterial({});
 axis3._material.isLineMode = true;
 
 var axis4 = new DDD.AxesHelper();
-axis4.scaling(2, 2, 2)
+axis4.scaling(4, 4, 4)
 axis4._material = new DDD.UIMaterial({});
 axis4._material.isLineMode = true;
 

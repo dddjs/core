@@ -62,27 +62,27 @@ export class Mat3 extends Base {
     return this;
   }
 
-  div(mat: Mat3) {
-    let ele = this.elements,
-      _ele = mat.elements;
-    _ele.forEach((item, index) => {
-      ele[index] -= item;
-    })
-    return this;
-  }
+  // div(mat: Mat3) {
+  //   let ele = this.elements,
+  //     _ele = mat.elements;
+  //   _ele.forEach((item, index) => {
+  //     ele[index] -= item;
+  //   })
+  //   return this;
+  // }
   // 单位
   static get E() {
     return new Mat3(1, 0, 0, 0, 1, 0, 0, 0, 1);
   }
 
-  // 零
-  static get Zero() {
-    return new Mat3(0, 0, 0, 0, 0, 0, 0, 0, 0);
-  }
-
   identity() {
     this.elements = [1, 0, 0, 0, 1, 0, 0, 0, 1]
     return this;
+  }
+
+  // 零
+  static get Zero() {
+    return new Mat3(0, 0, 0, 0, 0, 0, 0, 0, 0);
   }
 
   empty() {
@@ -122,7 +122,7 @@ export class Mat3 extends Base {
 
   }
 
-  // 伴随，共轭 矩阵A*
+  // 伴随，共轭 矩阵A^*
   adjugate() {
     // 矩阵的代数余子式：划去任意选定的k行、k列后
     // 矩阵的代数余子式 求伴随矩阵

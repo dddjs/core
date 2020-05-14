@@ -26,7 +26,6 @@ export class Object3d extends Base {
   public _transformOnWorld: boolean = false;// true 公转， false 自转
   constructor(public _name: string, _pos: Vec3 = new Vec3(0, 0, 0)) {
     super()
-    this._position = _pos;
 
     this._position.onChange(() => {
       this._modelMatrix.compose(this._position, this._quaternion, this._scale).trigger()
@@ -44,6 +43,8 @@ export class Object3d extends Base {
       let q = this._euler.quaternion();
       this._quaternion.mul(q.x, q.y, q.z, q.w).trigger()
     });
+
+    this.setPosition(_pos.x, _pos.y, _pos.z);
   }
 
   get name() {

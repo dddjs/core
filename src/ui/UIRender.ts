@@ -19,7 +19,7 @@ export class UIRender extends Base {
 
   getTargetMatrix(obj) {
     if (obj._parent) {
-      return obj._modelMatrix.clone().dot(this.getTargetMatrix(obj._parent))
+      return obj._modelMatrix.clone().rightDot(this.getTargetMatrix(obj._parent))
     }
     return obj._modelMatrix;
   }
