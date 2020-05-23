@@ -7,6 +7,8 @@ import { Quaternion } from './Quaternion';
 // Pitch: 俯仰 around the x-axis 
 // Yaw: 偏航（航向）around the y-axis
 // Roll:横滚 around the z-axis
+
+// https://blog.csdn.net/u012750702/article/details/72229117
 export class Euler extends Base {
   // pitch, yaw, roll 单位：角度
   // 按 z-y-x 顺序 RPY

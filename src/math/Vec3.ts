@@ -1,9 +1,11 @@
 import Base from '../Base';
 export class Vec3 extends Base {
+  public static X: Vec3 = new Vec3(1,0,0);
+  public static Y: Vec3 = new Vec3(0,1,0);
+  public static Z: Vec3 = new Vec3(0,0,1);
   constructor(public x: number = 0, public y: number = 0, public z: number = 0) {
     super()
   }
-
 
   set(x: number, y: number, z: number) {
     this.x = x;
@@ -145,7 +147,7 @@ export class Vec3 extends Base {
   }
 
   trigger() {
-    this._onChangeCallback();
+    this._onChangeCallback(this);
   }
 
   onChange(callback) {

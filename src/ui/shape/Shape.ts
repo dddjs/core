@@ -40,6 +40,10 @@ export class Shape extends Object3d {
     return this._gemotry.indeices;
   }
 
+  public get normals(){
+    return this._gemotry.normals;
+  }
+
   public get colors() {
     return this._gemotry.colors;
   }

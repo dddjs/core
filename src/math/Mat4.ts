@@ -3,7 +3,7 @@ import { Vec3 } from './Vec3';
 import { Mat3 } from './Mat3';
 import { DEG2RAD } from '../tools/index'
 import { Quaternion } from './Quaternion';
-
+// https://zh.numberempire.com/matrixcalculator.php 在线矩阵计算
 export class Mat4 extends Base {
   elements: number[];
   constructor(a: number = 0, b: number = 0, c: number = 0, d: number = 0,
@@ -74,6 +74,19 @@ export class Mat4 extends Base {
     })
 
     return this;
+  }
+
+  mulVec3(v: Vec3){
+    let e = this.elements;
+    let x = v.x;
+    let y = v.y;
+    let z = v.z;
+
+    let nx = e[ 0 ] * x + e[ 4 ] * y + e[ 8 ] * z + e[ 12 ];
+		let ny = e[ 1 ] * x + e[ 5 ] * y + e[ 9 ] * z + e[ 13 ];
+    let nz = e[ 2 ] * x + e[ 6 ] * y + e[ 10 ] * z + e[ 14 ];
+    
+    return new Vec3(nx, ny, nz)
   }
 
   leftDot(mat: Mat4) {
@@ -162,7 +175,7 @@ export class Mat4 extends Base {
       0, 0, 0, 1);
   }
 
-    identity() {
+  identity() {
     this.elements = [
       1, 0, 0, 0,
       0, 1, 0, 0,
@@ -272,7 +285,7 @@ export class Mat4 extends Base {
 
     if (!det) {
       console.log('error: det is 0')
-      return null;
+      return this;
     }
     det = 1.0 / det;
 
@@ -538,12 +551,12 @@ export class Mat4 extends Base {
     if (isRightHand) {
       // 视线方向为 z 轴负方向， 
       let zAxis = eye.clone().sub(target.x, target.y, target.z);
-      let NZ = zAxis.clone().normalize();
+      let NZ = zAxis.normalize();
 
       let xAxis = up.clone().cross(NZ.x, NZ.y, NZ.z);
-      let UX = xAxis.clone().normalize();
+      let UX = xAxis.normalize();
 
-      let VY = NZ.clone().cross(UX.x, UX.y, UX.z);
+      let VY = NZ.clone().cross(UX.x, UX.y, UX.z).normalize();
 
       // // 右手旋转的逆矩阵, 正交矩阵的逆矩阵就是就是它的转置矩阵
       var r = new Mat4(
@@ -553,7 +566,7 @@ export class Mat4 extends Base {
         0.0, 0.0, 0.0, 1.0
       )
 
-
+        // console.log(UX,VY,NZ)
 
       // 右手平移的逆矩阵, 正交矩阵的逆矩阵就是就是它的转置矩阵
       var t = new Mat4(
@@ -761,7 +774,153 @@ export class Mat4 extends Base {
 
     return this;
   }
+  //-- start
+  makeRotationAxis ( axis: Vec3, angle:number ) {
+    // 过原点的轴
+		// Based on http://www.gamedev.net/reference/articles/article1199.asp
 
+		var c = Math.cos( angle );
+		var s = Math.sin( angle );
+		var t = 1 - c;
+		var x = axis.x, y = axis.y, z = axis.z;
+		var tx = t * x, ty = t * y;
+
+		this.elements = [
+      tx * x + c, tx * y - s * z, tx * z + s * y, 0,
+			tx * y + s * z, ty * y + c, ty * z - s * x, 0,
+			tx * z - s * y, ty * z + s * x, t * z * z + c, 0,
+			0, 0, 0, 1
+    ]
+
+		 return this;
+
+  }
+  
+  makeRotationAnyAxis ( v1: Vec3, v2: Vec3, angle:number ) {
+    // 任意轴
+		// Based on https://www.cnblogs.com/graphics/archive/2012/08/10/2627458.html
+
+    let va = v1.x;
+    let vb = v1.y;
+    let vc = v1.z;
+
+    let axis = v2.clone().sub(v1.x, v1.y, v1.z)
+    axis.normalize();
+
+    let u = axis.x;
+    let v = axis.y;
+    let w = axis.z;
+
+    let uu = u * u;
+    let uv = u * v;
+    let uw = u * w;
+    let vv = v * v;
+    let vw = v * w;
+    let ww = w * w;
+    let au = va * u;
+    let av = va * v;
+    let aw = va * w;
+    let bu = vb * u;
+    let bv = vb * v;
+    let bw = vb * w;
+    let cu = vc * u;
+    let cv = vc * v;
+    let cw = vc * w;
+
+
+		var c = Math.cos( angle );
+		var s = Math.sin( angle );
+		var t = 1 - c;
+
+		this.elements = [
+      uu + (vv + ww) * c,  uv * t + w * s, uw * t - v * s, 0,
+      uv * t - w * s, vv + (uu + ww) * c, vw * t + u * s, 0,
+      uw * t + v * s, vw * t - u * s, ww + (uu + vv) * c, 0,
+      (va * (vv + ww) - u * (bv + cw)) * t + (bw - cv) * s,(vb * (uu + ww) - v * (au + cw)) * t + (cu - aw) * s, (vc * (uu + vv) - w * (au + bv)) * t + (av - bu) * s, 1 
+    ]
+
+		 return this;
+
+	}
+
+	makeScale ( x, y, z ) {
+
+		this.elements = [
+
+			x, 0, 0, 0,
+			0, y, 0, 0,
+			0, 0, z, 0,
+			0, 0, 0, 1
+
+    ];
+
+		return this;
+
+	}
+  //-- end
+  setLookAt(eyeX, eyeY, eyeZ, centerX, centerY, centerZ, upX, upY, upZ) {
+    var e, fx, fy, fz, rlf, sx, sy, sz, rls, ux, uy, uz;
+  
+    fx = centerX - eyeX;
+    fy = centerY - eyeY;
+    fz = centerZ - eyeZ;
+  
+    // Normalize f.
+    rlf = 1 / Math.sqrt(fx*fx + fy*fy + fz*fz);
+    fx *= rlf;
+    fy *= rlf;
+    fz *= rlf;
+  
+    // Calculate cross product of f and up.
+    sx = fy * upZ - fz * upY;
+    sy = fz * upX - fx * upZ;
+    sz = fx * upY - fy * upX;
+  
+    // Normalize s.
+    rls = 1 / Math.sqrt(sx*sx + sy*sy + sz*sz);
+    sx *= rls;
+    sy *= rls;
+    sz *= rls;
+  
+    // Calculate cross product of s and f.
+    ux = sy * fz - sz * fy;
+    uy = sz * fx - sx * fz;
+    uz = sx * fy - sy * fx;
+  
+    // Set to this.
+    e = this.elements;
+    e[0] = sx;
+    e[1] = ux;
+    e[2] = -fx;
+    e[3] = 0;
+  
+    e[4] = sy;
+    e[5] = uy;
+    e[6] = -fy;
+    e[7] = 0;
+  
+    e[8] = sz;
+    e[9] = uz;
+    e[10] = -fz;
+    e[11] = 0;
+  
+    e[12] = 0;
+    e[13] = 0;
+    e[14] = 0;
+    e[15] = 1;
+  
+    // Translate.
+    return this.translate(-eyeX, -eyeY, -eyeZ);
+  }
+
+  translate(x, y, z) {
+    var e = this.elements;
+    e[12] += e[0] * x + e[4] * y + e[8]  * z;
+    e[13] += e[1] * x + e[5] * y + e[9]  * z;
+    e[14] += e[2] * x + e[6] * y + e[10] * z;
+    e[15] += e[3] * x + e[7] * y + e[11] * z;
+    return this;
+  }
 
   // --------  start
   trigger() {

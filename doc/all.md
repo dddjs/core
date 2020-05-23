@@ -178,5 +178,106 @@ lrtb 形成的视锥体是不规则的，所以进行平移进行规则校正
 - 相机的运动（）
 
 - 自转与公转
+```
+默认自转，公转可以添加空父物体，并空物体自转来实现其公转效果
+```
 
 - 制图、建模软件通常使用正交投影，这样不会因为投影而改变物体比例；而对于其他大多数应用，通常使用透视投影，因为这更接近人眼的观察效果
+
+- 两坐标系间的转换推导
+```
+同一点，在两坐标系A,B的值分别是 （a1,a2, a3）和 (b1, b2, b3)
+```
+
+- [世界坐标系与相机坐标系转换](https://www.cnblogs.com/ghjnwk/p/10852264.html)
+1. 坐标系的间转换就是旋转和平移
+1. 相机默认与世界坐标系重合
+1. 相机开始进行 平移或旋转后 到了当前位置
+1. 相机的当前位置的模型矩阵就是相机运动的结果矩阵
+1. 即从世界坐标经过相机模型矩阵到了当前位置：相机坐标系到世界坐标的转换是经过相机的模型矩阵
+1. [世界坐标系到相机坐标系转换是经过相机的模型矩阵的逆矩阵](https://blog.csdn.net/RURUD/article/details/72823718?)
+
+```
+相机模型
+先看看使用相机的主要步骤：
+
+移动相机到拍摄位置，镜头对准某个方向(视图变换,view transform)
+将拍摄对象一到场景中的某个位置(模型变换,model transform)
+设置相机焦距或调整缩放比例(投影变换,projection transform)
+对结果图像拉伸或者压缩，变换为需要的图片大小(视口变换,viewpoint transform)
+```
+
+- 跟随（保持一定的角度和距离）
+- 两坐标系 调距，调姿势，
+1. [三维空间任意一点绕任意轴线旋转](https://blog.csdn.net/maple_2014/article/details/104443928)
+1. [三维重建：点绕特定轴旋转公式](https://blog.csdn.net/wishchin/article/details/80926037)
+
+- 判断三维坐标系旋转正方向的简单方法
+![判断三维坐标系旋转正方向的简单方法](./assets/left-right-hand-rule.jpg)
+坐标系使用左手与右手的命名，有一个作用就是用来方便判断旋转的正方向，这就是左手法则和右手法则。例如对左手坐标系，确定一个旋转轴后，左手握住拳头，拇指指向旋转轴的正方向，四指弯曲的方向为旋转的正方向。相应地，右手坐标系就用右手来判定。确定了旋转的正方向后，在公式计算中就很容易知道是该使用正角度还是负角度了。
+
+- 坐标系间的坐标转换
+> 注意: 父子关系的中的模型矩阵，为相对矩阵，兄弟间的矩阵为，绝对矩阵
+
+1. 父子节点 A > B, 即 B 是 A 的子节点，用 Ma 表示 A 的模型矩阵， mb 表示 B 的 模型矩阵，求 B 在世界坐标系矩阵 Mb ?
+```
+Mb = Ma * mb
+```
+
+1. 兄弟节点 A + B, 则 A, B 是兄弟节点， 用 Ma 表示 A 的模型矩阵， Mb 表示 B 的 模型矩阵，求 B 在 A 坐标系矩阵 mb ?
+```
+同上， Mb = Ma * mb
+则，mb = Mb/Ma,
+则，mb = Mb * Ma^-1
+```
+
+- 加入光照 与 不加入光照
+1. 法线，法线矩阵
+1. 环境光：放在最终颜色上的参数 `ambient * gl_FragColor` ,只与最终结果有关
+1. 点光源：光源的位置是确定的
+1. 平行光源：光的方向是固定的
+
+- 多灯光
+```js
+  // 法向量归一化
+    vec3 normal = normalize(v_normal);
+    // 计算环境光反射颜色
+    vec3 ambient = u_ambientColor * u_color.rgb;
+
+    // 第一个光源:平行光
+    vec3 lightDirection = normalize(u_lightPosition);
+    // 计算法向量和光线的点积
+    float cosTheta = max(dot(lightDirection, normal), 0.0);
+
+
+    // 计算漫反射光的颜色
+    vec3 diffuse = u_lightColor  * cosTheta * u_color.rgb;
+
+
+    // 宾氏模型高光
+    float shininess =100.0;
+    vec3 specularColor =vec3(1.0,1.0,1.0);
+    vec3 viewDirection = normalize(u_viewPosition-v_position);
+    vec3 halfwayDir = normalize(lightDirection + viewDirection);
+    float specularWeighting = pow(max(dot(normal, halfwayDir), 0.0), shininess);
+    vec3 specular = specularColor.rgb * specularWeighting * step(cosTheta,0.0);
+
+    // 第二个光源:点光源
+    vec3 lightDirection2 = normalize(u_lightPosition2 - v_position.xyz);
+    // 计算法向量和光线的点积
+    float cosTheta2 = max(dot(lightDirection2, normal), 0.0);
+    // 计算漫反射光的颜色
+    vec3 diffuse2 = u_lightColor * cosTheta2 * u_color.rgb;
+
+    // 冯氏模型高光
+    float shininess2 =30.0;
+    vec3 specularColor2 =vec3(1.0,1.0,1.0);
+    vec3 reflectionDirection = reflect(-lightDirection2, normal);
+    float specularWeighting2 = pow(max(dot(reflectionDirection, viewDirection), 0.0), shininess2);
+    vec3 specular2 = specularColor2.rgb * specularWeighting2 * step(cosTheta,0.0);
+
+    // 两个光源亮度相加
+    gl_FragColor = vec4(diffuse+diffuse2+ambient+specular+specular2,u_color.a);
+```
+- 着色器 与 片元器 交互
+1. 

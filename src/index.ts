@@ -47,6 +47,7 @@ export * from './ui/shape/Shape';
 export * from './ui/shape/Plane';
 export * from './ui/shape/Box';
 export * from './ui/shape/Ball';
+export * from './ui/shape/Torus';
 export * from './ui/shape/AxesHelper';
 export * from './ui/UIScene';
 

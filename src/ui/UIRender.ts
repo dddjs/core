@@ -17,12 +17,12 @@ export class UIRender extends Base {
     this.ctx = canvas.ctx;
   }
 
-  getTargetMatrix(obj) {
-    if (obj._parent) {
-      return obj._modelMatrix.clone().rightDot(this.getTargetMatrix(obj._parent))
-    }
-    return obj._modelMatrix;
-  }
+  // getTargetMatrix(obj) {
+  //   if (obj._parent) {
+  //     return obj._modelMatrix.clone().rightDot(this.getTargetMatrix(obj._parent))
+  //   }
+  //   return obj._modelMatrix;
+  // }
 
   drawMode(mode: string, gl: WebGLRenderingContext) {
     let glmode = -1;
@@ -122,7 +122,13 @@ export class UIRender extends Base {
       obj._renderInitial = true;
       material.config['position'] = GLTools.createVBO(gl, obj.vertices, false, true);
       material.config['color'] = GLTools.createVBO(gl, obj.colors, false, true);
-      material.config['a_TextCoord'] = GLTools.createVBO(gl, obj.textCoords, false, true);
+      if(obj.normals&&obj.normals.length>0) {
+        material.config['normal'] = GLTools.createVBO(gl, obj.normals, false, true);
+      }
+      if(obj.textCoords.length>0){
+        material.config['a_TextCoord'] = GLTools.createVBO(gl, obj.textCoords, false, true);
+      }
+      
       let ibo = GLTools.createVBO(gl, obj.indices, true, true);
       this.pool.push({
         obj,

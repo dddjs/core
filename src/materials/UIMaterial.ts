@@ -39,9 +39,11 @@ export class UIMaterial {
   }
 
   handle() {
-    let tbo = GLTools.createVBO(this.ctx, this.config["color"], false)
-
-    this.config["color"] = tbo;
+    // let cbo = GLTools.createVBO(this.ctx, this.config["color"], false)
+    // let nbo = GLTools.createVBO(this.ctx, this.config["normal"], false)
+    // debugger
+    // this.config["color"] = cbo;
+    // this.config["normal"] = nbo;
     this.isReady = true;
   }
 
@@ -81,10 +83,11 @@ export class UIMaterial {
       }
       if (value !== null) {
         this.locations[ret[2]] = {
-          prefix: ret[0],
-          type: ret[1],
-          value: value
+          prefix: ret[0],// uniform, attribute
+          type: ret[1], // bool, ivec, bvec, vec
+          value: value // 在shader 中 位置
         }
+        
       } else {
         throw new Error()
       }
@@ -114,12 +117,14 @@ export class UIMaterial {
     return this.locations[name] && this.locations[name].value;
   }
 
-  getTargetMatrix(obj) {
-    if (obj._parent) {
-      return obj._modelMatrix.clone().rightDot(this.getTargetMatrix(obj._parent))
-    }
-    return obj._modelMatrix;
-  }
+  // getTargetMatrix(obj) {
+  //   // if (obj._parent) {
+  //   //   return obj._modelMatrix.clone().rightDot(this.getTargetMatrix(obj._parent))
+  //   // }
+  //   // return obj._modelMatrix;
+
+  //   return ;
+  // }
 
   upload(camera, obj) {
     for (const item in this.locations) {
@@ -134,9 +139,16 @@ export class UIMaterial {
           }
             break;
           case 'Mmatrix': {
-            this.uploadItem(item, this.getTargetMatrix(obj).elements)
-          }
-            break;
+            this.uploadItem(item, obj.getMatrixOnWorld().elements)
+          // }
+          //   break;
+          // case 'uAmbientColor':{
+          //   this.uploadItem(item, [.3,.3,.3])
+          } break;
+          case 'Normalmatrix':{
+            this.uploadItem(item, obj.getMatrixOnWorld().leftDot(camera.viewMatrix).inverse().transpose().elements)
+          } break;
+          // case '':{} break;
           default: {
             this.uploadItem(item, this.config[item])
           }
@@ -151,7 +163,7 @@ export class UIMaterial {
       prefix = location.prefix,
       type = location.type;
 
-    switch (type) {
+      switch (type) {
       case 'bool':
       case 'int':
       case 'float': {

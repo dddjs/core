@@ -12,13 +12,16 @@ export class ShaderChunk {
     uniform mat4 Pmatrix;
     uniform mat4 Vmatrix;
     uniform mat4 Mmatrix;
+    
+    
     ${this.vert}
     void main(void) { 
       gl_Position = Pmatrix*Vmatrix*Mmatrix*vec4(position, 1.);
-      ${this.vertMain}
+      ${this.vertMain} 
     }
     `;
     this.fragSource = `precision mediump float;
+    varying vec3 vLightWeighting; 
     ${this.frag}
     void main(void) {
       gl_FragColor = vec4(1., 1., 1., 1.);

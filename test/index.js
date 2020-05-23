@@ -15,6 +15,8 @@ var client = new DDD.UICanvas(mycanvas, {
   preserveDrawingBuffer: true
 })
 var camera = new DDD.UICamera();
+window.camera = camera;
+// camera.translateX(-1)
 var render = new DDD.UIRender(client, camera);
 
 
@@ -31,7 +33,7 @@ var mapMaterial = new DDD.UITextureMaterial({
 });
 
 var obj = new DDD.Plane();
-// obj.scaling(0.2, 0.2, 1.0);
+// obj.scaling(0.25, 0.2, .2);
 obj.setPosition(0, 0, 0)
 obj._material = new DDD.UIVideoMaterial({
   dynamic: true,
@@ -52,6 +54,7 @@ videoBtn.addEventListener('click', function () {
 var center = new DDD.Shape("_cener_");
 center._material = colorMaterial;
 // render.addRenderObject(center)
+
 var scene = new DDD.UIScene();
 scene.add(center)
 
@@ -134,7 +137,10 @@ obj1.setPosition(0, .8, 0)
 // obj1.lookAt(0, .8, 1)
 
 
+
+
 var axis = new DDD.AxesHelper();
+axis.scaling(4, 4, 4)
 axis._material = new DDD.UIMaterial({});
 axis._material.isLineMode = true;
 
@@ -164,6 +170,14 @@ box3.add(axis3);
 
 // var texture = new DDD.UITexture(client.gl);
 // console.log(texture)
+
+
+var t = new DDD.Torus();
+t._material = new DDD.UIMaterial({});
+t.scaling(.1,.1,.1)
+t.setPosition(1,-1,0)
+t.rotateX(Math.PI/2.)
+center.add(t); 
 
 
 var obj3 = new DDD.Plane();
@@ -197,6 +211,9 @@ animation.applyTransformation = (interpolatedTime) => {
   // box3.followAt(obj)
 }
 
+
+// camera.followAt(ball, 10)
+
 animation.registerAnimationStartListener((ani) => {
   // console.log('start...')
 }).registerAnimationEndListener((ani) => {
@@ -207,9 +224,9 @@ animation.registerAnimationStartListener((ani) => {
   // console.log('animation', progress)
   ball.setPosition(0, 0, (progress * 2 - 1.0) * 10)
   // box3.followAt(ball)
+  
 })
 
-box3.lookAt(0, 0, 0)
 
 animation.start()
 
@@ -234,10 +251,10 @@ ani
     pointer.setPosition(progress * 2 - 1.0, ani.getValue() * 2.0 / 52.0 - 1, 0)
 
     box5.lookAt(progress * 2 - 1.0, ani.getValue() * 2.0 / 52.0 - 1, 2)
-    // box5.followAt(pointer)
-
-
-
+    camera.lookAt(progress * 2 - 1.0, ani.getValue() * 2.0 / 52.0 - 1, 2)
+    // camera.followAt(pointer, 20)
+    // camera.followAt(pointer)
+    
     center.add(pointer)
   });
 ani.start()
@@ -252,10 +269,26 @@ center.add(obj)
 center.add(obj1)
 center.add(obj3)
 
+// box2.add(obj)
+var ball2 = new DDD.Ball();
+ball2._material = colorMaterial;
 
+ball2.scaling(0.2, 0.2, 0.2)
+ball2.setPosition(-1,1,.3)
+obj1.add(ball2);
 
+// ball2.scaling(0.04000000000000001, 0.04000000000000001, 0.2)
+// //ball2.setPosition(-1,1.1600000000000001,.3)
+// ball2.setPosition(-.2,1,.3)
+// center.add(ball2);
 
+let pos = new DDD.Vec3(), q = new DDD.Quaternion(), s = new DDD.Vec3(1,1,1);
+// ball2._modelMatrix.clone().rightDot(obj1._modelMatrix.clone()).decompose(pos, q, s)
+// obj1._modelMatrix.clone().decompose(pos, q, s)
+obj.getMatrixOnWorld().decompose(pos, q, s)
+console.log(pos, q,s, obj1._parent)
 
+let ang = 0.01;
 var animate = function (time) {
   render.renderScene(scene)
   // obj.rotateZ(-0.01)
@@ -264,6 +297,17 @@ var animate = function (time) {
   // box5.rotateZ(-0.01)
   ball.rotateZ(-0.01)
   // center.rotateZ(-0.1)
+  // camera.followAt(ball)
+  // camera.lookAt(obj1.position.x,obj1.position.y,obj1.position.z)
+  // obj1.lookAt(camera.position.x,camera.position.y,camera.position.z)
+  // console.log(box.r)
+  // camera.rotateOnWorldAxis( DDD.Vec3.X, ang)
+  // camera.rotateOnWorldAnyAxis( new DDD.Vec3(.1,.1,1), new DDD.Vec3(.1,.1,0), ang)
+  // camera.lookAt(0,0,1)
+  // camera.followAt(box2)
+  // obj1.rotateZ(ang)
+  // ang+=0.01
+  // console.log(box._quaternion)
   animation.updateAnimation();
   ani.updateAnimation();
   window.requestAnimationFrame(animate);
