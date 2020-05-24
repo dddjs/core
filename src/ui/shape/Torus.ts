@@ -9,7 +9,7 @@ export class Torus extends Shape {
 
     this._gemotry.setNormals(data.nor)
 
-    this._gemotry.setColors(data.col)
+    // this._gemotry.setColors(data.col)
 
     // this._gemotry.setTextCoords()
 
@@ -18,7 +18,7 @@ export class Torus extends Shape {
 
   }
 
-  torus(row, column, irad, orad){
+  torus(row:number=0, column:number=0, irad:number=0, orad:number=0){
 		var pos = new Array(), nor = new Array(),
 		    col = new Array(), idx = new Array();
 		for(var i = 0; i <= row; i++){
@@ -34,8 +34,8 @@ export class Torus extends Shape {
 				var rz = rr * Math.sin(tr);
 				pos.push(tx, ty, tz);
 				nor.push(rx, ry, rz);
-				var tc = this.hsva(360 / column * ii, 1, 1, 1);
-				col.push(tc[0], tc[1], tc[2], tc[3]);
+				// var tc = this.hsva(360 / column * ii, 1, 1, 1);
+				// col.push(tc[0], tc[1], tc[2], tc[3]);
 			}
 		}
 		for(i = 0; i < row; i++){
@@ -46,26 +46,5 @@ export class Torus extends Shape {
 			}
 		}
 		return {pos, nor, col, idx};
-	}
-	
-	// HSVカラー取得用関数
-	hsva(h, s, v, a){
-		if(s > 1 || v > 1 || a > 1){return;}
-		var th = h % 360;
-		var i = Math.floor(th / 60);
-		var f = th / 60 - i;
-		var m = v * (1 - s);
-		var n = v * (1 - s * f);
-		var k = v * (1 - s * (1 - f));
-		var color = new Array();
-		if(!s > 0 && !s < 0){
-			color.push(v, v, v, a); 
-		} else {
-			var r = new Array(v, n, m, m, k, v);
-			var g = new Array(k, v, v, n, m, m);
-			var b = new Array(m, m, k, v, v, n);
-			color.push(r[i], g[i], b[i], a);
-		}
-		return color;
 	}
 }

@@ -10,14 +10,28 @@ function convertCanvasToImage(canvas) {
   return image;
 }
 
+
+
 var mycanvas = document.getElementById('my_Canvas');
 var client = new DDD.UICanvas(mycanvas, {
   preserveDrawingBuffer: true
 })
-var camera = new DDD.UICamera();
-window.camera = camera;
+
+
 // camera.translateX(-1)
-var render = new DDD.UIRender(client, camera);
+var render = new DDD.UIRender(client);
+
+var scene = new DDD.UIScene(render);
+var scene2 = new DDD.UIScene(render);
+
+var camera = new DDD.UICamera(scene);
+var camera2 = new DDD.UICamera(scene2);
+
+
+let light = new DDD.PointLight("light", new DDD.Vec3(1,1,3));
+
+
+console.log(light)
 
 
 var pickBtn = document.getElementById('pick');
@@ -55,9 +69,27 @@ var center = new DDD.Shape("_cener_");
 center._material = colorMaterial;
 // render.addRenderObject(center)
 
-var scene = new DDD.UIScene();
-scene.add(center)
 
+scene.add(center)
+scene.add(light);
+
+scene.viewport = [0,0,window.innerWidth/2.0, window.innerHeight]
+scene2.viewport = [window.innerWidth/2.0, 0, window.innerWidth/2.0, window.innerHeight]
+// scene2.clearColor = new DDD.Color()
+scene2.setClearColor(1,0,0,1)
+scene.setAmbientColor(.8,0.8,0.8,1)
+// scene.ambientColor = new DDD.Color(.8,0.8,0.8,1)//(0,0,0,1);//
+// scene2.clearColor
+// scene2.add(center)
+
+
+var t = new DDD.Torus();
+t._material = new DDD.UIMaterial({uColor: new DDD.Color(1,1,0,1)});
+t.scaling(.1,.1,.1)
+t.setPosition(1,-1,0)
+t.rotateX(Math.PI/2.)
+// center.add(t); 
+scene2.add(t);
 
 var box = new DDD.Box('box');
 
@@ -168,16 +200,12 @@ box2.add(axis1);
 box5.add(axis2);
 box3.add(axis3);
 
+
+
 // var texture = new DDD.UITexture(client.gl);
 // console.log(texture)
 
 
-var t = new DDD.Torus();
-t._material = new DDD.UIMaterial({});
-t.scaling(.1,.1,.1)
-t.setPosition(1,-1,0)
-t.rotateX(Math.PI/2.)
-center.add(t); 
 
 
 var obj3 = new DDD.Plane();
@@ -286,11 +314,10 @@ let pos = new DDD.Vec3(), q = new DDD.Quaternion(), s = new DDD.Vec3(1,1,1);
 // ball2._modelMatrix.clone().rightDot(obj1._modelMatrix.clone()).decompose(pos, q, s)
 // obj1._modelMatrix.clone().decompose(pos, q, s)
 obj.getMatrixOnWorld().decompose(pos, q, s)
-console.log(pos, q,s, obj1._parent)
 
 let ang = 0.01;
 var animate = function (time) {
-  render.renderScene(scene)
+  render.renderScene()
   // obj.rotateZ(-0.01)
   // box.rotateZ(-0.01)
   box2.rotateY(-0.01)

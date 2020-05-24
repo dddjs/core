@@ -10,13 +10,25 @@
  * 融合：多光源效果
 */
 
-export class Light {
+import { Object3d } from "../core/Object3d";
+import { Vec3 } from '../math/Vec3';
+
+export class Light extends Object3d {
+  constructor(_name: string = "ddd-Light", _pos: Vec3 = new Vec3(0, 0, 0)){
+    super(_name, _pos);
+    this.mType = 'Light';
+    this.isLight = true;
+  }
   
 }
 
 // 环境光
 export class AmbientLight extends Light {
+  constructor(color: String){
+    super('ambient-light')
 
+    
+  }
 }
 
 // 平行光
@@ -31,6 +43,11 @@ export class PointLight extends Light {
 
 // 聚光灯
 export class SpotLight extends Light {
+
+}
+
+// 半球灯
+export class HemisphericLight extends Light {
 
 }
 

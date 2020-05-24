@@ -12,12 +12,12 @@ export class Shape extends Object3d {
       0, 0, 0
     ])
 
-    this._gemotry.setColors([
-      0, 0, 1, 1,
-      1, 0, 0, 1,
-      0, 1, 0, 1,
-      1, 0, 1, 1
-    ])
+    // this._gemotry.setColors([
+    //   0, 0, 1, 1,
+    //   1, 0, 0, 1,
+    //   0, 1, 0, 1,
+    //   1, 0, 1, 1
+    // ])
 
     this._gemotry.setTextCoords([
       0.0, 1.0,
@@ -44,9 +44,9 @@ export class Shape extends Object3d {
     return this._gemotry.normals;
   }
 
-  public get colors() {
-    return this._gemotry.colors;
-  }
+  // public get colors() {
+  //   return this._gemotry.colors;
+  // }
 
   public get textCoords() {
     return this._gemotry.textCoords;

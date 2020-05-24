@@ -5,8 +5,9 @@ import { ShaderChunk } from "./chunks/ShaderChunk";
 export class UIShaderMaterial extends UIMaterial {
   // image map
 
-  constructor(public config: object = {}) {
-    super()
+  constructor( config: object = {}) {
+    super(config)
+
   }
 
   shaderSource() {

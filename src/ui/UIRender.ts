@@ -1,18 +1,17 @@
 import { UIScene } from './UIScene';
 import Base from "../Base";
-import { UICamera } from "./UICamera";
 import { UICanvas } from "./UICanvas";
 import { GLTools } from "../tools/GLTools";
 
 export class UIRender extends Base {
   public ctx: WebGLRenderingContext | null;
-  private pool: Object[] = [];
+  
   public scenes: UIScene[] = [];
 
   public glmode: string = 'triangle';
   public drawArray: boolean = false;
   public isLineMode: boolean = false;
-  constructor(public canvas: UICanvas, public camera: UICamera) {
+  constructor(public canvas: UICanvas) {
     super()
     this.ctx = canvas.ctx;
   }
@@ -57,7 +56,7 @@ export class UIRender extends Base {
   }
 
 
-  renderItem(gl: WebGLRenderingContext, item: any) {
+  renderItem(gl: WebGLRenderingContext, item: any, scene:UIScene) {
     let ibo = item.ibo,
       obj = item.obj,
       material = obj._material;
@@ -68,7 +67,7 @@ export class UIRender extends Base {
     }
     if (material.isReady === false) return;
 
-    material.upload(this.camera, obj);
+    material.upload(scene, obj);
 
 
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ibo);
@@ -90,53 +89,89 @@ export class UIRender extends Base {
     }
   }
 
-  clean(gl: WebGLRenderingContext) {
+  setViewport(gl: WebGLRenderingContext, scene:UIScene) {
     // gl.enable(gl.CULL_FACE);
     // gl.frontFace(gl.CW)
+    let { clearColor,viewport} = scene;
+    gl.enable(gl.SCISSOR_TEST);
+    gl.scissor(viewport[0], viewport[1], viewport[2], viewport[3]);
+    gl.viewport(viewport[0], viewport[1], viewport[2], viewport[3]);
+    gl.clearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
+  }
+
+  clean(gl: WebGLRenderingContext, scene:UIScene) {
+    // gl.enable(gl.CULL_FACE);
+    // gl.frontFace(gl.CW)
+    // let {clearColor} = scene;
+    let { clearColor,viewport} = scene;
+    gl.enable(gl.SCISSOR_TEST);
+    
+    gl.scissor(viewport[0], viewport[1], viewport[2], viewport[3]);
+    gl.viewport(viewport[0], viewport[1], viewport[2], viewport[3]);
+    
+    // gl.viewport(viewport[0], viewport[1], viewport[2], viewport[3]);
+    gl.clearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
+    // gl.clearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
+    // 开启隐藏面消除
     gl.enable(gl.DEPTH_TEST);
     gl.depthFunc(gl.LEQUAL);
-    gl.clearColor(0.5, 0.5, 0.5, 0.9);
+    
+    
     gl.clearDepth(1.0);
+    // gl.clearStencil(0);
 
-    gl.viewport(0.0, 0.0, this.canvas.width, this.canvas.height);
-    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);// gl.STENCIL_BUFFER_BIT
     // void gl.colorMask(red, green, blue, alpha);
+    gl.disable(gl.SCISSOR_TEST);
+    // // 启用多边形偏移，避免深度冲突
+    // gl.enable(gl.POLYGON_OFFSET_FILL);
+    // //设置偏移量
+    // gl.polygonOffset(1.0, 1.0);
   }
 
-  render() {
+  render(scene:UIScene) {
     if (this.ctx === null) return;
     let gl = this.ctx;
-    this.clean(gl)
-    this.pool.forEach(item => {
-      this.renderItem(gl, item);
-    })
+      this.clean(gl, scene);
+    // this.scenes.forEach(scene=>{
+      // this.setViewport(gl, scene)
+      scene.pool.forEach(item => {
+        this.renderItem(gl, item, scene);
+      })
+    // })
+   
   }
 
-  renderScene(scene: UIScene) {
+  renderScene() {
     if (!this.ctx) return;
     let gl = this.ctx;
-    scene.render((obj) => {
-      let material = obj._material;
-      if (!material || obj._renderInitial) return;
-      material.init(gl);
-      obj._renderInitial = true;
-      material.config['position'] = GLTools.createVBO(gl, obj.vertices, false, true);
-      material.config['color'] = GLTools.createVBO(gl, obj.colors, false, true);
-      if(obj.normals&&obj.normals.length>0) {
-        material.config['normal'] = GLTools.createVBO(gl, obj.normals, false, true);
-      }
-      if(obj.textCoords.length>0){
-        material.config['a_TextCoord'] = GLTools.createVBO(gl, obj.textCoords, false, true);
-      }
-      
-      let ibo = GLTools.createVBO(gl, obj.indices, true, true);
-      this.pool.push({
-        obj,
-        ibo,
-        name: obj.name,
-      });
+    // this.clean(gl,null);
+    this.scenes.forEach(scene=>{
+      scene.walkTree((obj) => {
+        let material = obj._material;
+        if (!material || obj._renderInitial) return;
+        material.init(gl);
+        obj._renderInitial = true;
+        material.config['position'] = GLTools.createVBO(gl, obj.vertices, false, true);
+        // material.config['color'] = GLTools.createVBO(gl, obj.colors, false, true);
+        if(obj.normals&&obj.normals.length>0) {
+          material.config['normal'] = GLTools.createVBO(gl, obj.normals, false, true);
+        }
+        if(obj.textCoords.length>0){
+          material.config['a_TextCoord'] = GLTools.createVBO(gl, obj.textCoords, false, true);
+        }
+        
+        let ibo = GLTools.createVBO(gl, obj.indices, true, true);
+        scene.pool.push({
+          obj,
+          ibo,
+          name: obj.name,
+        });
+      })
+      this.render(scene)
     })
-    this.render()
+    
   }
 
   clone() {

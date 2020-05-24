@@ -17,12 +17,12 @@ export class Plane extends Shape {
       -1.0, 1.0, 0.0
     ])
 
-    this._gemotry.setColors([
-      0, 0, 1, 1,
-      1, 0, 0, 1,
-      0, 1, 0, 1,
-      1, 0, 1, 1
-    ])
+    // this._gemotry.setColors([
+    //   0, 0, 1, 1,
+    //   1, 0, 0, 1,
+    //   0, 1, 0, 1,
+    //   1, 0, 1, 1
+    // ])
 
     this._gemotry.setTextCoords([
       1.0, 1.0,

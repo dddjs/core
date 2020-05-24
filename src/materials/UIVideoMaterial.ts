@@ -7,14 +7,14 @@ export class UIVideoMaterial extends UIMaterial {
   _video: HTMLVideoElement | null = null;
   _videoIsReady: boolean = false;
   _videoPausing: boolean = true;
-  constructor(config: {}) {
-    super()
+  constructor(config:object = {}) {
+    super(config)
 
     this.config = {
       video: null,
       autoPlay: false,
       u_Sampler: null,
-      ...config
+      ...this.config
     }
 
 

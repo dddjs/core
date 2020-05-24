@@ -23,7 +23,11 @@ export class Object3d extends Base {
   public _material: UIMaterial | null = null;
   public _renderInitial: boolean = false;
 
+
+  protected mType: string = 'Object3d';
   protected isCamera: boolean = false;
+  protected isLight: boolean = false;
+
   protected isRightHand: boolean = true;
   public _transformOnWorld: boolean = false;// true 公转， false 自转
   constructor(public _name: string, _pos: Vec3 = new Vec3(0, 0, 0)) {
@@ -214,11 +218,8 @@ export class Object3d extends Base {
       zAxis.mul(-1)
     }
     if (zAxis.length() === 0) {
-
       // eye and target are in the same position
-
       zAxis.z = 1;
-
     }
     let NZ = zAxis.normalize();
 

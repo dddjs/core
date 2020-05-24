@@ -4,13 +4,13 @@ export class Ball extends Shape {
   constructor(name: string = 'ball', x: number = 0, y: number = 0) {
     super(name)
 
-    var latitudeBands = 25;//纬度带
-    var longitudeBands = 25;//经度带
-    var positions: number[] = [];//存储x，y，z坐标
-    var colors: number[] = [];//存储x，y，z坐标
-    var normals: number[] = [];//
-    var indices: number[] = [];//三角形列表（索引值）
-    var textureCoordData: number[] = [];//存储纹理坐标u，v，纹理坐标与顶点坐标一一对应
+    // var latitudeBands = 25;//纬度带
+    // var longitudeBands = 25;//经度带
+    // var positions: number[] = [];//存储x，y，z坐标
+    // var colors: number[] = [];//存储x，y，z坐标
+    // var normals: number[] = [];//
+    // var indices: number[] = [];//三角形列表（索引值）
+    // var textureCoordData: number[] = [];//存储纹理坐标u，v，纹理坐标与顶点坐标一一对应
 
     // for (var latNum = 0; latNum <= latitudeBands; latNum++) {
     //   var lat = latNum * Math.PI / latitudeBands - Math.PI / 2;//纬度范围从-π/2到π/2
@@ -58,7 +58,7 @@ export class Ball extends Shape {
 
     this._gemotry.setVertices(data.pos)
 
-    this._gemotry.setColors(data.col)
+    // this._gemotry.setColors(data.col)
 
     // this._gemotry.setTextCoords(textureCoordData)
 
@@ -80,14 +80,10 @@ export class Ball extends Shape {
 				var tz = rr * rad * Math.sin(tr);
 				var rx = rr * Math.cos(tr);
 				var rz = rr * Math.sin(tr);
-				if(color){
-					var tc = color;
-				}else{
-					tc = this.hsva(360 / row * i, 1, 1, 1);
-				}
+			
 				pos.push(tx, ty, tz);
 				nor.push(rx, ry, rz);
-				col.push(tc[0], tc[1], tc[2], tc[3]);
+				// col.push(tc[0], tc[1], tc[2], tc[3]);
 			}
 		}
 		r = 0;
@@ -100,27 +96,5 @@ export class Ball extends Shape {
 		}
 		return {pos , nor, col, idx};
 	}
-	
-	// HSVカラー取得用関数
-	 hsva(h, s, v, a){
-		if(s > 1 || v > 1 || a > 1){return;}
-		var th = h % 360;
-		var i = Math.floor(th / 60);
-		var f = th / 60 - i;
-		var m = v * (1 - s);
-		var n = v * (1 - s * f);
-		var k = v * (1 - s * (1 - f));
-		var color = new Array();
-		if(!s > 0 && !s < 0){
-			color.push(v, v, v, a); 
-		} else {
-			var r = new Array(v, n, m, m, k, v);
-			var g = new Array(k, v, v, n, m, m);
-			var b = new Array(m, m, k, v, v, n);
-			color.push(r[i], g[i], b[i], a);
-		}
-		return color;
-	}
-
 
 }

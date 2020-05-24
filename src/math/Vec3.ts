@@ -154,7 +154,7 @@ export class Vec3 extends Base {
     this._onChangeCallback = callback;
   }
 
-  _onChangeCallback() {
+  _onChangeCallback(ins) {
 
   }
 

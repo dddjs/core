@@ -1,7 +1,7 @@
 export class Gemotry {
   private _vertices: Float32Array;
   private _normals: Float32Array;
-  private _colors: Float32Array;
+  // private _colors: Float32Array;
   private _textCoords: Float32Array;
   private _indices: Uint16Array;
 
@@ -13,9 +13,9 @@ export class Gemotry {
     this._normals = new Float32Array(data)
   }
 
-  setColors(data: number[] = []) {
-    this._colors = new Float32Array(data)
-  }
+  // setColors(data: number[] = []) {
+  //   this._colors = new Float32Array(data)
+  // }
 
   setTextCoords(data: number[] = []) {
     this._textCoords = new Float32Array(data)
@@ -33,9 +33,9 @@ export class Gemotry {
     return this._normals;
   }
 
-  get colors() {
-    return this._colors;
-  }
+  // get colors() {
+  //   return this._colors;
+  // }
 
   get textCoords() {
     return this._textCoords;

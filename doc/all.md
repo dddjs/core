@@ -277,7 +277,7 @@ Mb = Ma * mb
     vec3 specular2 = specularColor2.rgb * specularWeighting2 * step(cosTheta,0.0);
 
     // 两个光源亮度相加
-    gl_FragColor = vec4(diffuse+diffuse2+ambient+specular+specular2,u_color.a);
+    gl_FragColor = vec4((ambient+diffuse+diffuse2)+specular+specular2,u_color.a);
 ```
 - 着色器 与 片元器 交互
 1. 

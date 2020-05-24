@@ -7,15 +7,14 @@ import { ImagesLoaded } from "../tools/ImagesLoaded";
 export class UIMultiTexturesMaterial extends UIMaterial {
   // image map
 
-  constructor(config: {
-  }) {
-    super()
+  constructor(config: object) {
+    super(config)
 
     this.config = {
       // color: null,
       texture0: null,
       texture1: null,
-      ...config
+      ...this.config
     }
   }
 

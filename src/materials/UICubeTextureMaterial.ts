@@ -8,12 +8,12 @@ export class UICubeTextureMaterial extends UIMaterial {
   // image map
 
   constructor(config: Object = {}) {
-    super()
+    super(config)
 
     this.config = {
       images: [],
       u_Sampler: null,
-      ...config
+      ...this.config
     }
   }
 // https://www.dazhuanlan.com/2019/09/02/6a6bd2460cd9/
@@ -21,7 +21,7 @@ export class UICubeTextureMaterial extends UIMaterial {
     let vert = `
     attribute vec3 normal;
     uniform mat4 Normalmatrix;
-    highp vec3 uAmbientColor = vec3(0.2, 0.2, 0.2);
+    highp vec3 cAmbientColor = vec3(0.2, 0.2, 0.2);
     const vec3 u_LightColor = vec3(1.0, 1.0, 1.0); 
     const vec3 u_LightDir = vec3(1.322, .123, .65); // （平行光源）光源方向一定 与 （点光源）光源位置一定
     //const vec3 u_LightPosition = vec3(2.0, 2.0, 4.0); / / （平行光源）光源方向一定 与 （点光源）光源位置一定
@@ -36,11 +36,12 @@ export class UICubeTextureMaterial extends UIMaterial {
     // vec3 nDir = normalize(vec3(gl_Position) - u_LightPosition);
     float directional = max(dot( nDir, vnor), 0.0);
     vec3 diffuse = u_LightColor  * directional;
-    vec3 ambient = uAmbientColor ;
+    vec3 ambient = cAmbientColor ;
     vLightWeighting =  ambient + diffuse; 
     `,
       frag = `
     uniform samplerCube u_Sampler;
+    varying vec3 vLightWeighting; 
     varying vec3 v_TexCoord;`,
       fragMain = `
       vec3 ambient = vec3(1.1);

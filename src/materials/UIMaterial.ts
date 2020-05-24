@@ -1,5 +1,7 @@
 import { ShaderChunk } from "./chunks/ShaderChunk";
 import { GLTools } from "../tools/GLTools";
+import { Color } from "../core/Color";
+import { UIScene } from "../ui/UIScene";
 
 export class UIMaterial {
   // color
@@ -15,23 +17,21 @@ export class UIMaterial {
   public isLineMode: boolean = false;// 绘制模式
   public mode: String = 'triangle';
 
-  constructor(public config: object = {}) {
+  public config: object ;
+  constructor( config: object = {}) {
     this.config = {
-      color: new Float32Array([
-        0, 0, 1, 1,
-        1, 0, 0, 1,
-        0, 1, 0, 1,
-        1, 0, 1, 1
-      ]),
+      uColor: new Color(128/255.0,128/255.0,128/255.0,1),
+      uAmbientColor: new Color(1,1,1,1),
       ...config
     }
   }
 
   shaderSource() {
     let vert = `
-    attribute vec4 color;
+    uniform vec4 uColor;
+    
     varying vec4 vColor;`,
-      vertMain = "vColor = color;",
+      vertMain = "vColor = uColor;",
       frag = "varying vec4 vColor;",
       fragMain = "gl_FragColor = vColor;";
 
@@ -39,11 +39,6 @@ export class UIMaterial {
   }
 
   handle() {
-    // let cbo = GLTools.createVBO(this.ctx, this.config["color"], false)
-    // let nbo = GLTools.createVBO(this.ctx, this.config["normal"], false)
-    // debugger
-    // this.config["color"] = cbo;
-    // this.config["normal"] = nbo;
     this.isReady = true;
   }
 
@@ -117,36 +112,30 @@ export class UIMaterial {
     return this.locations[name] && this.locations[name].value;
   }
 
-  // getTargetMatrix(obj) {
-  //   // if (obj._parent) {
-  //   //   return obj._modelMatrix.clone().rightDot(this.getTargetMatrix(obj._parent))
-  //   // }
-  //   // return obj._modelMatrix;
-
-  //   return ;
-  // }
-
-  upload(camera, obj) {
+  upload(scene: UIScene, obj) {
     for (const item in this.locations) {
       if (this.locations.hasOwnProperty(item)) {
         switch (item) {
           case 'Pmatrix': {
-            this.uploadItem(item, camera._projectMatrix.elements)
+            this.uploadItem(item, scene.camera._projectMatrix.elements)
           }
             break;
           case 'Vmatrix': {
-            this.uploadItem(item, camera.viewMatrix.elements)
+            this.uploadItem(item, scene.camera.viewMatrix.elements)
           }
             break;
           case 'Mmatrix': {
             this.uploadItem(item, obj.getMatrixOnWorld().elements)
-          // }
-          //   break;
-          // case 'uAmbientColor':{
-          //   this.uploadItem(item, [.3,.3,.3])
+          }
+            break;
+          case 'uColor':{
+            this.uploadItem(item, this.config[item].elements)
+          } break;
+          case 'uAmbientColor':{
+            this.uploadItem(item, scene.ambientColor.elements)
           } break;
           case 'Normalmatrix':{
-            this.uploadItem(item, obj.getMatrixOnWorld().leftDot(camera.viewMatrix).inverse().transpose().elements)
+            this.uploadItem(item, obj.getMatrixOnWorld().leftDot(scene.camera.viewMatrix).inverse().transpose().elements)
           } break;
           // case '':{} break;
           default: {

@@ -10,8 +10,8 @@ export * from './math/Mat3';
 export * from './math/Mat4';
 export * from './math/Quaternion';
 export * from './math/Euler';
-export * from './math/Color';
 
+export * from './core/Color';
 export * from './core/PerspectiveCamera';
 export * from './core/OrthographicCamera';
 export * from './animation/Animation';
@@ -50,6 +50,10 @@ export * from './ui/shape/Ball';
 export * from './ui/shape/Torus';
 export * from './ui/shape/AxesHelper';
 export * from './ui/UIScene';
+
+
+
+export * from './lights/Light';
 
 
 

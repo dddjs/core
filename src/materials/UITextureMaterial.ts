@@ -7,15 +7,15 @@ import { ImagesLoaded } from "../tools/ImagesLoaded";
 export class UITextureMaterial extends UIMaterial {
   // image map
 
-  constructor(config: {
+  constructor(config:  {
     dynamic?: boolean
   }) {
-    super()
+    super(config)
 
     this.config = {
       image: null,
       u_Sampler: null,
-      ...config
+      ...this.config
     }
   }
 

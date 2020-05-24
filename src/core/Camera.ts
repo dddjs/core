@@ -6,8 +6,8 @@ export class Camera extends Object3d {
   _viewMatrix: Mat4 = Mat4.view(new Vec3(0,0,1), new Vec3(0,0,0), new Vec3(0,1,0));
   constructor(_name: string = "ddd-camera", _pos: Vec3 = new Vec3(0, 0, 0)) {
     super(_name, _pos);
+    this.mType = 'Camera';
     this.isCamera = true;
-    this.isRightHand = true;
   }
 
   get viewMatrix() {
