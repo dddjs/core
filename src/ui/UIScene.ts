@@ -42,23 +42,30 @@ export class UIScene {
   }
 
   //
-  getNodeById() {
+  findNodeById() {
 
   }
 
-  getNodeByName() {
+  findNodeByName(name) {
+    let ret = null;
+     this.nodes.forEach(node=>{
+      if(node.name == name){
+        ret = node;
+      }
+    })
+
+    return ret;
+  }
+
+  findNodeParent() {
 
   }
 
-  getNodeParent() {
+  findNodeParents() {
 
   }
 
-  getNodeParents() {
-
-  }
-
-  getNodeSiblings() {
+  findNodeSiblings() {
 
   }
 

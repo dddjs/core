@@ -35,7 +35,7 @@ export class UITextureMaterial extends UIMaterial {
   handle() {
     let that = this;
     new ImagesLoaded([this.config['image']]).onProgress((image) => {
-      let texture = GLTools.createTexture(that.ctx, image, {});
+      let texture = GLTools.createTexture(that.ctx, image, {flip:0});
       that.config['u_Sampler'] = texture;
       that.isReady = true;
     })

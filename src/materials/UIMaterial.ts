@@ -14,6 +14,7 @@ export class UIMaterial {
   public locations: Object = {};
 
   public isReady: boolean = false;
+  public drawArray: boolean = false;
   public isLineMode: boolean = false;// 绘制模式
   public mode: String = 'triangle';
 
@@ -59,6 +60,8 @@ export class UIMaterial {
   analySource(source: string) {
     let shaderTypeReg = /(attribute|uniform)\s\S+\s\S+;/g;
     // 标准化 shader
+    // 斩掉单行注释和多行注释
+    source = source.replace(/\/\/[^]*?\n/g, "").replace(/\/\*[^]*?\*\//g, '')
     let format = source.replace(/[\s]+/g, ' ');
     // 去 换行
     format = format.replace(/[\r\n]/g, "");
@@ -82,9 +85,9 @@ export class UIMaterial {
           type: ret[1], // bool, ivec, bvec, vec
           value: value // 在shader 中 位置
         }
-        
       } else {
-        throw new Error()
+        // throw new Error()
+        console.error(`${record}; declared but its value is never read`)
       }
     })
   }

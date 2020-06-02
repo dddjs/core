@@ -1,4 +1,9 @@
+const gltfLoader = require('./gltf.load.js');
+const loader = require('./obj.load.js');
 const DDD = require("../src/index.ts");
+
+
+
 
 // canvas-->image
 function convertCanvasToImage(canvas) {
@@ -26,6 +31,76 @@ var scene2 = new DDD.UIScene(render);
 
 var camera = new DDD.UICamera(scene);
 var camera2 = new DDD.UICamera(scene2);
+// scene2.camera = camera;
+// gltfLoader.load(client.ctx,'./plane.gltf', (meshes)=>{
+  // gltfLoader.load(client.ctx,'./Squirtle.gltf', (meshes)=>{
+  gltfLoader.load(client.ctx,'./elphant/index.gltf', (meshes)=>{
+    // gltfLoader.load(client.ctx,'./pcube.gltf', (meshes)=>{
+      // gltfLoader.load('./gubi/index.gltf', (meshes)=>{
+// loader.objLoad('./elphant/index.obj', (meshes)=>{
+  // loader.objLoad('./Squirtle.obj', (meshes)=>{
+  // loader.objLoad('./jian/index.obj', (meshes)=>{
+  // loader.objLoad('./Squirtle.obj', (meshes)=>{
+  // loader.objLoad('./gubi/index.obj', (meshes)=>{
+  // loader.objLoad('./plane.obj', (meshes)=>{
+  // loader.objLoad('./magnolia.obj', (meshes)=>{
+  let pare = new DDD.Mesh("Squirtle",[],[],[],[]);
+  meshes.forEach(({v, vn, vt, ind, g})=>{
+    var mesh = new DDD.Mesh(g, v, vn, vt, ind)
+    // mesh.setPosition(0,0,0)
+    console.log(mesh)
+    // mesh._material = new DDD.UIMaterial({
+    //   color: new DDD.Color(1,1,0,1)
+    // })
+    mesh._material = new DDD.UITextureMaterial({
+      // image: "assets/momo.png",
+      // image: `./gb/0.jpg`,
+      // image: `./gubi/tietu2.JPG`,
+      image: `./elphant/elphant/1.jpeg`,
+      // image: `./tex/${g}.png`,
+      // image: `./jian/chartlet/0.png`,
+    });
+    // mesh._material.mode = 'strip'
+    mesh._material.isLineMode  = true;
+    // mesh.scaling(.05,.05,.05)
+    // mesh.scaling(.5,.5,.5)
+    // mesh.rotateX(-45)
+    pare.add(mesh)
+  })
+  pare.scaling(.01,.01,.01)
+  // pare.scaling(.5,.5,.5)
+  // pare.scaling(.05,.05,.05)
+  scene2.add(pare)
+})
+// gltfLoader.load('./Squirtle.gltf', (meshes)=>{
+//   // gltfLoader.load('./elphant/index.gltf', (meshes)=>{
+//     let pare = new DDD.Mesh("Squirtle",[],[],[],[]);
+//   meshes.forEach(({v, vn, vt, ind, g})=>{
+//     var mesh = new DDD.Mesh(g, v, vn, vt, ind)
+//     // mesh.setPosition(0,0,0)
+//     console.log(mesh)
+//     // mesh._material = new DDD.UIMaterial({
+//     //   color: new DDD.Color(1,1,0,1)
+//     // })
+//     mesh._material = new DDD.UITextureMaterial({
+//       // image: "assets/momo.png",
+//       // image: `./gb/0.jpg`,
+//       // image: `./gubi/tietu2.JPG`,
+//       // image: `./elphant/elphant/1.jpeg`,
+//       image: `./tex/${g}.png`,
+//       // image: `./jian/chartlet/0.png`,
+//     });
+//     // mesh._material.mode = 'fan'
+//     // mesh.scaling(.05,.05,.05)
+//     // mesh.scaling(.5,.5,.5)
+//     // mesh.rotateX(-45)
+//     pare.add(mesh)
+//   })
+//   // pare.scaling(.01,.01,.01)
+//   pare.scaling(.5,.5,.5)
+//   // pare.scaling(.05,.05,.05)
+//   scene2.add(pare)
+// })
 
 
 let light = new DDD.PointLight("light", new DDD.Vec3(1,1,3));
@@ -86,10 +161,10 @@ scene.setAmbientColor(.8,0.8,0.8,1)
 var t = new DDD.Torus();
 t._material = new DDD.UIMaterial({uColor: new DDD.Color(1,1,0,1)});
 t.scaling(.1,.1,.1)
-t.setPosition(1,-1,0)
+// t.setPosition(1,-1,0)
 t.rotateX(Math.PI/2.)
 // center.add(t); 
-scene2.add(t);
+// scene2.add(t);
 
 var box = new DDD.Box('box');
 
@@ -111,6 +186,9 @@ box5.scaling(0.2, 0.2, 0.2);
 // box5.rotateY(0.25);
 box5.setPosition(-1, -1, 0)
 // box5.lookAt(-.8, -.8, 1)
+
+
+
 
 new DDD.ImagesLoaded([
   'assets/xneg.jpg',
@@ -279,7 +357,7 @@ ani
     pointer.setPosition(progress * 2 - 1.0, ani.getValue() * 2.0 / 52.0 - 1, 0)
 
     box5.lookAt(progress * 2 - 1.0, ani.getValue() * 2.0 / 52.0 - 1, 2)
-    camera.lookAt(progress * 2 - 1.0, ani.getValue() * 2.0 / 52.0 - 1, 2)
+    // camera.lookAt(progress * 2 - 1.0, ani.getValue() * 2.0 / 52.0 - 1, 2)
     // camera.followAt(pointer, 20)
     // camera.followAt(pointer)
     
@@ -335,6 +413,11 @@ var animate = function (time) {
   // obj1.rotateZ(ang)
   // ang+=0.01
   // console.log(box._quaternion)
+  let mod = scene2.findNodeByName("Squirtle")
+  if(mod){
+    mod.rotateY(-0.01)
+  }
+  
   animation.updateAnimation();
   ani.updateAnimation();
   window.requestAnimationFrame(animate);
@@ -352,6 +435,10 @@ mycanvas.addEventListener('webgl', (e) => {
     // box5.lookAt(e.webglX, e.webglY, 2)
     box5.lookAt(box2.position.x, box2.position.y, box2.position.z)
   }
+
+  let r = scene2.findNodeByName("mod");
+
+  console.log(r);
   // if(e.webglke)
   if (e.webglkeydown) {
     // console.log(e.webglkeyCode, e.webglkey)

@@ -8,7 +8,7 @@ export class UICamera extends Camera {
   constructor(scene: UIScene) {
     super('UI Camera', new Vec3(0,0,20));
     scene.camera = this;
-
+    
     // let near = 1;
     // let far = 1000;
     // let width = 2;

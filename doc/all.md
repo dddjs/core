@@ -281,3 +281,42 @@ Mb = Ma * mb
 ```
 - 着色器 与 片元器 交互
 1. 
+
+
+
+| 光源             | 说明                                                         |
+| ---------------- | ------------------------------------------------------------ |
+| AmbientLight     | 环境光，其颜色均匀的应用到场景及其所有对象上,这种光源为场景添加全局的环境光。 这种光没有特定的方向，不会产生阴影。通常不会把AmbientLight作为唯一的光源， 而是和SpotLight、DirectionalLight等光源结合使用，从而达到柔化阴影、添加全局色调的效果。 指定颜色时要相对保守，例如#0c0c0c。设置太亮的颜色会导致整个画面过度饱和，什么都看不清： |
+| PointLight       | 3D空间中的一个点光源，向所有方向发出光线                     |
+| SpotLight        | 产生圆锥形光柱的聚光灯，台灯、天花板射灯通常都属于这类光源,这种光源的使用场景最多 ，特别是在你需要阴影效果的时候。 |
+| DirectionalLight | 也就无限光，光线是平行的。典型的例子是日光,用于模拟遥远的，类似太阳那样的光源。 该光源与SpotLight的主要区别是，它不会随着距离而变暗，所有被照耀的地方获得相同的光照强度。 |
+| HemisphereLight  | 特殊光源，用于创建户外自然的光线效果， 此光源模拟物体表面反光效果、微弱发光的天空,模拟穹顶（半球）的微弱发光效果， 让户外场景更加逼真。使用DirectionalLight + AmbientLight可以在某种程度上来模拟户外光线， 但是不够真实，因为无法体现大气层的散射效果、地面或物体的反射效果 |
+| AreaLight        | 面光源，指定一个发光的区域                                   |
+| LensFlare        | 不是光源，用于给光源添加镜头光晕效果                         |
+
+
+
+
+
+
+
+| 材质                 | 说明                                                         |
+| -------------------- | ------------------------------------------------------------ |
+| MeshBasicMaterial    | 基本的材质，显示为简单的颜色或者显示为线框。不考虑光线的影响 |
+| MeshDepthMaterial    | 使用简单的颜色，但是颜色深度和距离相机的远近有关             |
+| MeshNormalMaterial   | 基于面Geometry的法线（normals）数组来给面着色                |
+| MeshFacematerial     | 容器，允许为Geometry的每一个面指定一个材质                   |
+| MeshLambertMaterial  | 考虑光线的影响，哑光材质                                     |
+| MeshPhongMaterial    | 考虑光线的影响，光泽材质                                     |
+| ShaderMaterial       | 允许使用自己的着色器来控制顶点如何被放置、像素如何被着色     |
+| LineBasicMaterial    | 用于THREE.Line对象，创建彩色线条                             |
+| LineDashMaterial     | 用于THREE.Line对象，创建虚线条                               |
+| RawShaderMaterial    | 仅和THREE.BufferedGeometry联用，优化静态Geometry（顶点、面不变）的渲染 |
+| SpriteCanvasMaterial | 在针对单独的点进行渲染时用到                                 |
+| SpriteMaterial       | 在针对单独的点进行渲染时用到                                 |
+| PointCloudMaterial   | 在针对单独的点进行渲染时用到                                 |
+
+
+
+
+

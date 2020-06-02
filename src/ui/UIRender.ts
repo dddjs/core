@@ -72,19 +72,19 @@ export class UIRender extends Base {
 
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ibo);
     let drawMode = this.drawMode(material.mode, gl);
-    if (this.drawArray) {
+    gl.lineWidth(5);
+    if (this.drawArray||obj._material.drawArray) {
       if (this.isLineMode || obj._material.isLineMode) {
-        gl.lineWidth(5);
+        
         gl.drawArrays(gl.LINES, 0, 6);
       } else {
         gl.drawArrays(drawMode, 0, 6);
       }
     } else {
       if (this.isLineMode || obj._material.isLineMode) {
-        gl.lineWidth(5);
         gl.drawElements(gl.LINES, obj.indices.length, gl.UNSIGNED_SHORT, 0);
       } else {
-        gl.drawElements(drawMode, obj.indices.length, gl.UNSIGNED_SHORT, 0);
+        gl.drawElements(drawMode, obj.indices.length, gl.UNSIGNED_SHORT, 0);//
       }
     }
   }
@@ -104,6 +104,7 @@ export class UIRender extends Base {
     // gl.frontFace(gl.CW)
     // let {clearColor} = scene;
     let { clearColor,viewport} = scene;
+    
     gl.enable(gl.SCISSOR_TEST);
     
     gl.scissor(viewport[0], viewport[1], viewport[2], viewport[3]);
@@ -146,23 +147,28 @@ export class UIRender extends Base {
   renderScene() {
     if (!this.ctx) return;
     let gl = this.ctx;
-    // this.clean(gl,null);
+    gl.frontFace(gl.CCW)
     this.scenes.forEach(scene=>{
       scene.walkTree((obj) => {
         let material = obj._material;
         if (!material || obj._renderInitial) return;
         material.init(gl);
         obj._renderInitial = true;
-        material.config['position'] = GLTools.createVBO(gl, obj.vertices, false, true);
-        // material.config['color'] = GLTools.createVBO(gl, obj.colors, false, true);
-        if(obj.normals&&obj.normals.length>0) {
-          material.config['normal'] = GLTools.createVBO(gl, obj.normals, false, true);
+        material.config['position'] = GLTools.createVBO(gl, obj.vertices||[], false, true);
+        // if(obj.normals&&obj.normals.length>0) {
+          material.config['normal'] = GLTools.createVBO(gl, obj.normals||[], false, true);
+        // }
+        // if(obj.textCoords.length>0){
+          material.config['a_TextCoord'] = GLTools.createVBO(gl, obj.textCoords||[], false, true);
+        // }
+
+        let ibo ;
+        if(obj.indices.length>0){
+          ibo = GLTools.createVBO(gl, obj.indices, true, true);
+        } else {
+          material.drawArray = true;
         }
-        if(obj.textCoords.length>0){
-          material.config['a_TextCoord'] = GLTools.createVBO(gl, obj.textCoords, false, true);
-        }
-        
-        let ibo = GLTools.createVBO(gl, obj.indices, true, true);
+    
         scene.pool.push({
           obj,
           ibo,

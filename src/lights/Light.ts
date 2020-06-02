@@ -24,7 +24,7 @@ export class Light extends Object3d {
 
 // 环境光
 export class AmbientLight extends Light {
-  constructor(color: String){
+  constructor(color: String, intensity ){
     super('ambient-light')
 
     
@@ -33,22 +33,41 @@ export class AmbientLight extends Light {
 
 // 平行光
 export class DirectionalLight extends Light {
-
+  // color — 环境光颜色；
+  // intensity – 光照强度。
+  constructor(color, intensity){
+    super()
+  }
 }
 
 // 点光源
 export class PointLight extends Light {
-
+// color — 环境光颜色；
+// intensity – 光照强度；
+// distance – 设置光距离物体的距离；
+// decay – 设置光的衰减量。
+  constructor(color,intensity,distance, decay){
+    super()
+  }
 }
 
 // 聚光灯
 export class SpotLight extends Light {
-
+  // angle — 聚光灯的张角；
+  // exponent – 光强在偏离目标的衰减指数
+  constructor(color, intensity, distance, angle, penumbra, decay){
+    super()
+  }
 }
 
-// 半球灯
+// 半球灯, 自然光线
 export class HemisphericLight extends Light {
-
+  // skyColor — 场景上方的光的颜色；
+  // groundColor – 场景下方的光的颜色；
+  // intensity – 光照强度。
+  constructor(skyColor, groundColor, intensity){
+    super()
+  }
 }
 
 //

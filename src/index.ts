@@ -43,6 +43,7 @@ export * from './textures/UITexture';
 
 export * from './core/Gemotry';
 export * from './core/Object3d';
+export * from './ui/shape/Mesh';
 export * from './ui/shape/Shape';
 export * from './ui/shape/Plane';
 export * from './ui/shape/Box';
