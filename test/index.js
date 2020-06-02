@@ -29,8 +29,25 @@ var render = new DDD.UIRender(client);
 var scene = new DDD.UIScene(render);
 var scene2 = new DDD.UIScene(render);
 
+
+scene.viewport = [0,0,window.innerWidth/2.0, window.innerHeight]
+scene2.viewport = [window.innerWidth/2.0, 0, window.innerWidth/2.0, window.innerHeight]
+// scene2.clearColor = new DDD.Color()
+scene2.setClearColor(1,0,0,1)
+scene.setAmbientColor(.8,0.8,0.8,1)
+// scene.ambientColor = new DDD.Color(.8,0.8,0.8,1)//(0,0,0,1);//
+// scene2.clearColor
+// scene2.add(center)
+
+
 var camera = new DDD.UICamera(scene);
+
 var camera2 = new DDD.UICamera(scene2);
+var camera2_1 = new DDD.UICamera(scene2);
+camera2_1.viewport = [window.innerWidth-100, window.innerHeight-100, 100, 100];
+camera2_1.rotateY(1, true);
+
+
 // scene2.camera = camera;
 // gltfLoader.load(client.ctx,'./plane.gltf', (meshes)=>{
   // gltfLoader.load(client.ctx,'./Squirtle.gltf', (meshes)=>{
@@ -148,14 +165,6 @@ center._material = colorMaterial;
 scene.add(center)
 scene.add(light);
 
-scene.viewport = [0,0,window.innerWidth/2.0, window.innerHeight]
-scene2.viewport = [window.innerWidth/2.0, 0, window.innerWidth/2.0, window.innerHeight]
-// scene2.clearColor = new DDD.Color()
-scene2.setClearColor(1,0,0,1)
-scene.setAmbientColor(.8,0.8,0.8,1)
-// scene.ambientColor = new DDD.Color(.8,0.8,0.8,1)//(0,0,0,1);//
-// scene2.clearColor
-// scene2.add(center)
 
 
 var t = new DDD.Torus();
@@ -330,7 +339,7 @@ animation.registerAnimationStartListener((ani) => {
   // console.log('animation', progress)
   ball.setPosition(0, 0, (progress * 2 - 1.0) * 10)
   // box3.followAt(ball)
-  
+  // camera1.followAt(ball, 10)
 })
 
 

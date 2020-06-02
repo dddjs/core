@@ -6,7 +6,8 @@ import {UICamera} from './UICamera';
 // https://baike.baidu.com/item/%E5%85%AB%E5%8F%89%E6%A0%91/5635733?fr=aladdin
 // 八叉树就是用在3D空间中的场景管理，可以很快地知道物体在3D场景中的位置，或侦测与其它物体是否有碰撞以及是否在可视范围内。
 export class UIScene {
-  public camera: UICamera;
+  public camera: UICamera|null = null;
+  public cameras: UICamera[] = [];
   // 场景视口
   public viewport: number[] = [0.0, 0.0, window.innerWidth, window.innerHeight];
   // 背景色
@@ -24,6 +25,14 @@ export class UIScene {
     // DEPTH_TEST: depthFunc
     // BLEND: blendFunc
     render.scenes.push(this)
+  }
+
+  control(camera: UICamera) {
+    this.cameras.forEach(camera=>{
+      camera.isControlled =  false;
+    })
+    camera.isControlled = true;
+    this.camera = camera;
   }
 
   //

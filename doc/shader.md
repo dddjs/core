@@ -227,3 +227,10 @@ int value )： 设置program object的参数；
 12、void DeleteProgram( uint program )：删除program object；
 ```
 
+
+### Shader 的组织
+- 通用
+   - 某固定功能（直接选取）
+   - 通用功能：预先定义，根据模型数据来调用（调用机制和方法重要）
+- 自定义
+   - 遇到一个定义一个

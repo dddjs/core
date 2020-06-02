@@ -2,6 +2,7 @@ import { ShaderChunk } from "./chunks/ShaderChunk";
 import { GLTools } from "../tools/GLTools";
 import { Color } from "../core/Color";
 import { UIScene } from "../ui/UIScene";
+import { UICamera } from "../ui/UICamera";
 
 export class UIMaterial {
   // color
@@ -115,16 +116,16 @@ export class UIMaterial {
     return this.locations[name] && this.locations[name].value;
   }
 
-  upload(scene: UIScene, obj) {
+  upload(scene: UIScene, camera:UICamera, obj) {
     for (const item in this.locations) {
       if (this.locations.hasOwnProperty(item)) {
         switch (item) {
           case 'Pmatrix': {
-            this.uploadItem(item, scene.camera._projectMatrix.elements)
+            this.uploadItem(item, camera!._projectMatrix.elements)
           }
             break;
           case 'Vmatrix': {
-            this.uploadItem(item, scene.camera.viewMatrix.elements)
+            this.uploadItem(item, camera!.viewMatrix.elements)
           }
             break;
           case 'Mmatrix': {
@@ -138,7 +139,7 @@ export class UIMaterial {
             this.uploadItem(item, scene.ambientColor.elements)
           } break;
           case 'Normalmatrix':{
-            this.uploadItem(item, obj.getMatrixOnWorld().leftDot(scene.camera.viewMatrix).inverse().transpose().elements)
+            this.uploadItem(item, obj.getMatrixOnWorld().leftDot(camera!.viewMatrix).inverse().transpose().elements)
           } break;
           // case '':{} break;
           default: {

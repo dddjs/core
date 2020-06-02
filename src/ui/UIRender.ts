@@ -2,6 +2,7 @@ import { UIScene } from './UIScene';
 import Base from "../Base";
 import { UICanvas } from "./UICanvas";
 import { GLTools } from "../tools/GLTools";
+import { UICamera } from './UICamera';
 
 export class UIRender extends Base {
   public ctx: WebGLRenderingContext | null;
@@ -56,7 +57,7 @@ export class UIRender extends Base {
   }
 
 
-  renderItem(gl: WebGLRenderingContext, item: any, scene:UIScene) {
+  renderItem(gl: WebGLRenderingContext, item: any, scene:UIScene, camera:UICamera) {
     let ibo = item.ibo,
       obj = item.obj,
       material = obj._material;
@@ -67,7 +68,7 @@ export class UIRender extends Base {
     }
     if (material.isReady === false) return;
 
-    material.upload(scene, obj);
+    material.upload(scene, camera, obj);
 
 
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ibo);
@@ -99,19 +100,29 @@ export class UIRender extends Base {
     gl.clearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
   }
 
-  clean(gl: WebGLRenderingContext, scene:UIScene) {
+  clean(gl: WebGLRenderingContext, scene:UIScene, camera: UICamera) {
     // gl.enable(gl.CULL_FACE);
     // gl.frontFace(gl.CW)
     // let {clearColor} = scene;
-    let { clearColor,viewport} = scene;
     
-    gl.enable(gl.SCISSOR_TEST);
     
-    gl.scissor(viewport[0], viewport[1], viewport[2], viewport[3]);
-    gl.viewport(viewport[0], viewport[1], viewport[2], viewport[3]);
+    if(camera.isControlled) {
+      let { clearColor,viewport} = scene;
+      gl.enable(gl.SCISSOR_TEST);
+      gl.scissor(viewport[0], viewport[1], viewport[2], viewport[3]);
+      gl.viewport(viewport[0], viewport[1], viewport[2], viewport[3]);
+      gl.clearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
+    } else {
+      let { clearColor,viewport} = camera;
+      gl.enable(gl.SCISSOR_TEST);
+      gl.scissor(viewport[0], viewport[1], viewport[2], viewport[3]);
+      gl.viewport(viewport[0], viewport[1], viewport[2], viewport[3]);
+      gl.clearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
+    }
+    
     
     // gl.viewport(viewport[0], viewport[1], viewport[2], viewport[3]);
-    gl.clearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
+    
     // gl.clearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
     // 开启隐藏面消除
     gl.enable(gl.DEPTH_TEST);
@@ -134,13 +145,14 @@ export class UIRender extends Base {
   render(scene:UIScene) {
     if (this.ctx === null) return;
     let gl = this.ctx;
-      this.clean(gl, scene);
-    // this.scenes.forEach(scene=>{
+      
+    scene.cameras.forEach(camera=>{
       // this.setViewport(gl, scene)
+      this.clean(gl, scene, camera);
       scene.pool.forEach(item => {
-        this.renderItem(gl, item, scene);
+        this.renderItem(gl, item, scene, camera);
       })
-    // })
+    })
    
   }
 
