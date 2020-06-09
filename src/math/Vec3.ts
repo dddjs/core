@@ -111,7 +111,7 @@ export class Vec3 extends Base {
     return Math.sqrt(x * x + y * y + z * z);
   }
 
-  // 向量之间的角度
+  // 向量之间的角度,用户转向
   angle(v: Vec3) {
     let length1 = this.length(),
       length2 = v.length();
@@ -123,6 +123,14 @@ export class Vec3 extends Base {
     let dot = this.dot(v.x, v.y, v.z);
 
     return Math.acos(dot / (length1 * length2))
+  }
+
+  equals(v: Vec3, EPSILON: Number = Number.EPSILON) {
+    if(Math.abs(v.x - this.x)<=EPSILON  && 
+        Math.abs(v.x - this.x)<=EPSILON  &&
+        Math.abs(v.x - this.x)<=EPSILON  )
+    return true;
+    return false;
   }
 
   //-------- start

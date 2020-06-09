@@ -12,8 +12,8 @@ export * from './math/Quaternion';
 export * from './math/Euler';
 
 export * from './core/Color';
-export * from './core/PerspectiveCamera';
-export * from './core/OrthographicCamera';
+export * from './ui/PerspectiveCamera';
+export * from './ui/OrthographicCamera';
 export * from './animation/Animation';
 export * from './animation/ValueAnimation';
 export * from './animation/interpolator/LinearInterpolator';
@@ -50,6 +50,8 @@ export * from './ui/shape/Box';
 export * from './ui/shape/Ball';
 export * from './ui/shape/Torus';
 export * from './ui/shape/AxesHelper';
+export * from './ui/shape/MeshBuild';
+export * from './ui/shape/BoxMeshBuild';
 export * from './ui/UIScene';
 
 

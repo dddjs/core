@@ -92,4 +92,15 @@ export class Box extends Shape {
 
   }
 
+  buildMesh(){
+
+    
+    return {
+      v:[],
+      vt:[],
+      vn:[],
+      ind:[],
+    }
+  }
+
 }

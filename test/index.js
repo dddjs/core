@@ -26,11 +26,14 @@ var client = new DDD.UICanvas(mycanvas, {
 // camera.translateX(-1)
 var render = new DDD.UIRender(client);
 
-var scene = new DDD.UIScene(render);
 var scene2 = new DDD.UIScene(render);
+var scene = new DDD.UIScene(render);
+
 
 
 scene.viewport = [0,0,window.innerWidth/2.0, window.innerHeight]
+scene.isLineMode = true;//
+
 scene2.viewport = [window.innerWidth/2.0, 0, window.innerWidth/2.0, window.innerHeight]
 // scene2.clearColor = new DDD.Color()
 scene2.setClearColor(1,0,0,1)
@@ -39,19 +42,22 @@ scene.setAmbientColor(.8,0.8,0.8,1)
 // scene2.clearColor
 // scene2.add(center)
 
-
-var camera = new DDD.UICamera(scene);
-
 var camera2 = new DDD.UICamera(scene2);
 var camera2_1 = new DDD.UICamera(scene2);
-camera2_1.viewport = [window.innerWidth-100, window.innerHeight-100, 100, 100];
-camera2_1.rotateY(1, true);
+var camera = new DDD.UICamera(scene);
+window.camera = camera;
+
+camera2_1.viewport = [window.innerWidth-100, 0, 100, 100];
+// camera2_1.rotateY(1, true);
+camera2_1.rotateOnWorldAxis( DDD.Vec3.X, Math.PI/2.0)
+camera2_1.lookAt(0,0,0)
 
 
 // scene2.camera = camera;
 // gltfLoader.load(client.ctx,'./plane.gltf', (meshes)=>{
   // gltfLoader.load(client.ctx,'./Squirtle.gltf', (meshes)=>{
-  gltfLoader.load(client.ctx,'./elphant/index.gltf', (meshes)=>{
+  // gltfLoader.load(client.ctx,'./jian/index.gltf', (meshes)=>{
+    gltfLoader.load(client.ctx,'./elphant/index.gltf', (meshes)=>{
     // gltfLoader.load(client.ctx,'./pcube.gltf', (meshes)=>{
       // gltfLoader.load('./gubi/index.gltf', (meshes)=>{
 // loader.objLoad('./elphant/index.obj', (meshes)=>{
@@ -62,28 +68,68 @@ camera2_1.rotateY(1, true);
   // loader.objLoad('./plane.obj', (meshes)=>{
   // loader.objLoad('./magnolia.obj', (meshes)=>{
   let pare = new DDD.Mesh("Squirtle",[],[],[],[]);
-  meshes.forEach(({v, vn, vt, ind, g})=>{
-    var mesh = new DDD.Mesh(g, v, vn, vt, ind)
-    // mesh.setPosition(0,0,0)
-    console.log(mesh)
-    // mesh._material = new DDD.UIMaterial({
-    //   color: new DDD.Color(1,1,0,1)
+  // let loader = new THREE.GLTFLoader();/*实例化加载器*/
+  //  loader.load('./elphant/index.gltf',function (obj) {
+
+  //     console.log(obj);
+  //     // obj.scene.children
+  //     let objMeshes = obj.scene.children;
+  //     let count=0;
+      meshes.forEach(({v, vn, vt, ind, g}, index)=>{
+        var mesh = new DDD.Mesh(g, v, vn, vt, ind)
+        // mesh.setPosition(0,0,0)
+        console.log(mesh)
+        // mesh._material = new DDD.UIMaterial({
+        //   color: new DDD.Color(1,1,0,1)
+        // })
+        mesh._material = new DDD.UITextureMaterial({
+          // image: "assets/momo.png",
+          // image: `./gb/0.jpg`,
+          // image: `./gubi/tietu2.JPG`,
+          image: `./elphant/elphant/1.jpeg`,
+          // image: `./tex/${g}.png`,
+          // image: `./jian/chartlet/0.png`,
+        });
+        mesh._material.mode = 'line'
+        // mesh._material.isLineMode  = true;
+        // mesh.scaling(.05,.05,.05)
+        // mesh.scaling(.5,.5,.5)
+        // mesh.rotateX(-45)
+    
+        // 加载 glTF 格式的模型
+        // setTimeout(()=>{
+        //   console.log('ind',index, '比较开始')
+        //   objMeshes[index].geometry.attributes.position.array.forEach((p,i)=>{
+        //     if(p!==v[i]) console.log(index,'v',i,'----', p,v[i]); else count++;
+        //   })
+
+        //   objMeshes[index].geometry.attributes.uv.array.forEach((p,i)=>{
+        //     if(p!==vt[i]) console.log(index,'vt',i,'----', p,vt[i]); else count++;
+        //   })
+
+        //   objMeshes[index].geometry.attributes.normal.array.forEach((p,i)=>{
+        //     if(p!==vn[i]) console.log(index,'vn',i,'----', p,vn[i]); else count++;
+        //   })
+
+        //   objMeshes[index].geometry.index.array.forEach((p,i)=>{
+        //     if(p!==ind[i]) console.log(index,'index',i,'----', p,ind[i]); else count++;
+        //   })
+        //   console.log('ind',index, '比较结束', count)
+        // },0)
+        
+    
+    
+        pare.add(mesh)
+      })
+    // },function (xhr) {
+
+
+    // },function (error) {
+
+
     // })
-    mesh._material = new DDD.UITextureMaterial({
-      // image: "assets/momo.png",
-      // image: `./gb/0.jpg`,
-      // image: `./gubi/tietu2.JPG`,
-      image: `./elphant/elphant/1.jpeg`,
-      // image: `./tex/${g}.png`,
-      // image: `./jian/chartlet/0.png`,
-    });
-    // mesh._material.mode = 'strip'
-    mesh._material.isLineMode  = true;
-    // mesh.scaling(.05,.05,.05)
-    // mesh.scaling(.5,.5,.5)
-    // mesh.rotateX(-45)
-    pare.add(mesh)
-  })
+
+  
   pare.scaling(.01,.01,.01)
   // pare.scaling(.5,.5,.5)
   // pare.scaling(.05,.05,.05)
@@ -138,6 +184,12 @@ var mapMaterial = new DDD.UITextureMaterial({
   image: "assets/miao256.jpg",
 });
 
+var bbb = new DDD.BoxMeshBuild("bbb");
+bbb._material = new DDD.UIMaterial({
+  // colorMaterial
+});
+// scene2.add(bbb)
+
 var obj = new DDD.Plane();
 // obj.scaling(0.25, 0.2, .2);
 obj.setPosition(0, 0, 0)
@@ -162,8 +214,8 @@ center._material = colorMaterial;
 // render.addRenderObject(center)
 
 
-scene.add(center)
-scene.add(light);
+// scene.add(center)
+// scene.add(light);
 
 
 
@@ -175,7 +227,7 @@ t.rotateX(Math.PI/2.)
 // center.add(t); 
 // scene2.add(t);
 
-var box = new DDD.Box('box');
+var box = new DDD.BoxMeshBuild('box');
 
 box.scaling(0.2, 0.2, 0.2)
 // box.rotateX(0.25)
@@ -187,7 +239,7 @@ box._material = new DDD.UIMaterial({});
 // box._material.isLineMode = false;
 
 
-var box5 = new DDD.Box('box5');
+var box5 = new DDD.BoxMeshBuild('box5');
 var cubeMap = new DDD.UIShaderMaterial({});
 box5._material = cubeMap
 box5.scaling(0.2, 0.2, 0.2);
@@ -212,7 +264,7 @@ new DDD.ImagesLoaded([
 })
 
 
-var box2 = new DDD.Box('box2');
+var box2 = new DDD.BoxMeshBuild('box2' , 1,1,1, 3,3,3);
 box2.scaling(0.2, 0.2, 0.2);
 // box2.rotateX(0.25);
 // box2.rotateY(0.25);
@@ -230,7 +282,7 @@ box2._material = new DDD.UICubeTextureMaterial({
 });
 
 
-var box3 = new DDD.Box('box3');
+var box3 = new DDD.BoxMeshBuild('box3');
 box3.scaling(0.2, 0.2, 0.2);
 // box3.rotateX(0.25);
 // box3.rotateY(0.25);
@@ -415,9 +467,9 @@ var animate = function (time) {
   // camera.lookAt(obj1.position.x,obj1.position.y,obj1.position.z)
   // obj1.lookAt(camera.position.x,camera.position.y,camera.position.z)
   // console.log(box.r)
-  // camera.rotateOnWorldAxis( DDD.Vec3.X, ang)
+  // camera2_1.rotateOnWorldAxis( DDD.Vec3.X, ang)
   // camera.rotateOnWorldAnyAxis( new DDD.Vec3(.1,.1,1), new DDD.Vec3(.1,.1,0), ang)
-  // camera.lookAt(0,0,1)
+  // camera2_1.lookAt(0,0,0)
   // camera.followAt(box2)
   // obj1.rotateZ(ang)
   // ang+=0.01
@@ -481,3 +533,4 @@ mycanvas.addEventListener('webgl', (e) => {
 
 })
 // }
+

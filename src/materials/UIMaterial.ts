@@ -24,6 +24,7 @@ export class UIMaterial {
     this.config = {
       uColor: new Color(128/255.0,128/255.0,128/255.0,1),
       uAmbientColor: new Color(1,1,1,1),
+      aBarycentric: new Float32Array([1,0,0, 1,1,0, 0,0,1, 0,0,0]),
       ...config
     }
   }
@@ -48,6 +49,7 @@ export class UIMaterial {
     this.ctx = ctx;
     this.shaderSource()
     if (!this.shader) return;
+    this.config.aBarycentric = GLTools.createVBO(ctx, this.config.aBarycentric, false, true);
     this.vertShader = GLTools.createShader(ctx, this.shader.vertSource, ctx.VERTEX_SHADER);
     this.fragShader = GLTools.createShader(ctx, this.shader.fragSource, ctx.FRAGMENT_SHADER);
     if (this.vertShader && this.fragShader) {
@@ -155,7 +157,7 @@ export class UIMaterial {
     let location = this.locations[name],
       prefix = location.prefix,
       type = location.type;
-
+debugger
       switch (type) {
       case 'bool':
       case 'int':

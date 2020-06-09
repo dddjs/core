@@ -8,6 +8,7 @@ export class ShaderChunk {
 
   compose() {
     this.vertSource = `
+    
     struct DirLight {
       vec3 direction;
   
@@ -88,21 +89,42 @@ export class ShaderChunk {
     uniform mat4 Vmatrix;
     uniform mat4 Mmatrix;
     
-    
-    
+    //
+    // attribute vec3 aBarycentric;
+    // varying vec3 vBarycentric;
+    varying vec3 vertex;
     ${this.vert}
     void main(void) { 
       gl_Position = Pmatrix*Vmatrix*Mmatrix*vec4(position, 1.);
       ${this.vertMain} 
+      // vBarycentric = aBarycentric;
+      vertex = position;
     }
     `;
-    this.fragSource = `precision mediump float;
+    this.fragSource = `#extension GL_OES_standard_derivatives:enable
+    precision mediump float;
     uniform vec4 uAmbientColor;
+    // varying vec3 vBarycentric;
+    // var barycentric = [1,0,0, 1,1,0, 0,0,1, 0,0,0];
     
-    
+    varying vec3 vertex;
     ${this.frag}
     void main(void) {
       gl_FragColor = vec4(1., 1., 1., 1.);
+      // vec3 d=fwidth(vBarycentric);
+      // vec3 a3=smoothstep(vec3(0.0), d*2.0, vBarycentric);
+      // gl_FragColor.rgb = mix(vec3(0.,0.,0.),vec3(1.0), min(min(a3.x, a3.y), a3.z));
+
+      // // Pick a coordinate to visualize in a grid
+      // vec2 coord = vertex.xz;
+    
+      // // Compute anti-aliased world-space grid lines
+      // vec2 grid = abs(fract(coord - 0.5) - 0.5) / fwidth(coord);
+      // float line = min(grid.x, grid.y);
+    
+      // // Just visualize the grid lines directly
+      // gl_FragColor = vec4(vec3(1.0 - min(line, 1.0)), 1.0);
+
       ${this.fragMain}
       gl_FragColor = vec4(uAmbientColor.xyz*gl_FragColor.rgb, gl_FragColor.a);
     }

@@ -15,14 +15,16 @@ export class UIRender extends Base {
   constructor(public canvas: UICanvas) {
     super()
     this.ctx = canvas.ctx;
+
+    var available_extensions = this.ctx!.getSupportedExtensions();
+    console.log('可用的扩展', available_extensions)
+    this.enableExtension(this.ctx);
   }
 
-  // getTargetMatrix(obj) {
-  //   if (obj._parent) {
-  //     return obj._modelMatrix.clone().rightDot(this.getTargetMatrix(obj._parent))
-  //   }
-  //   return obj._modelMatrix;
-  // }
+  enableExtension(gl){
+    gl.getExtension("OES_standard_derivatives");
+    gl.getExtension("OES_element_index_uint");
+  }
 
   drawMode(mode: string, gl: WebGLRenderingContext) {
     let glmode = -1;
@@ -56,6 +58,33 @@ export class UIRender extends Base {
     return glmode;
   }
 
+  drawType(gl, dataType){
+    let _type=-1;
+    switch (dataType){
+          
+      case "Int8Array":
+          _type = gl.UNSIGNED_BYTE;
+          break;
+      case "Uint8Array":
+        _type = gl.UNSIGNED_BYTE;
+          break;
+      case "Int16Array":
+        _type = gl.UNSIGNED_SHORT;
+          break;
+      case "Uint16Array":
+        _type = gl.UNSIGNED_SHORT;
+          break;
+      case "Uint32Array":
+        _type = gl.UNSIGNED_INT;
+          break;
+      case "Float32Array":
+        _type = gl.UNSIGNED_INT;
+          break;
+      default:
+        console.log(dataType)
+    }
+    return _type;
+  }
 
   renderItem(gl: WebGLRenderingContext, item: any, scene:UIScene, camera:UICamera) {
     let ibo = item.ibo,
@@ -75,17 +104,20 @@ export class UIRender extends Base {
     let drawMode = this.drawMode(material.mode, gl);
     gl.lineWidth(5);
     if (this.drawArray||obj._material.drawArray) {
-      if (this.isLineMode || obj._material.isLineMode) {
+      if (this.isLineMode || scene.isLineMode || ["line", 'lineloop', 'linestrip'].indexOf(material.mode)>-1 ) {
         
         gl.drawArrays(gl.LINES, 0, 6);
       } else {
         gl.drawArrays(drawMode, 0, 6);
       }
     } else {
-      if (this.isLineMode || obj._material.isLineMode) {
-        gl.drawElements(gl.LINES, obj.indices.length, gl.UNSIGNED_SHORT, 0);
+      let type = this.drawType(gl, obj.indices.constructor.name)
+      if (this.isLineMode || scene.isLineMode || ["line", 'lineloop', 'linestrip'].indexOf(material.mode)>-1 ) {
+        // debugger
+        
+        gl.drawElements(gl.LINES, obj.indices.length, type, 0);
       } else {
-        gl.drawElements(drawMode, obj.indices.length, gl.UNSIGNED_SHORT, 0);//
+        gl.drawElements(drawMode, obj.indices.length, type, 0);//
       }
     }
   }
@@ -159,7 +191,8 @@ export class UIRender extends Base {
   renderScene() {
     if (!this.ctx) return;
     let gl = this.ctx;
-    gl.frontFace(gl.CCW)
+    // gl.enable(gl.CULL_FACE);
+    // gl.frontFace(gl.CW)
     this.scenes.forEach(scene=>{
       scene.walkTree((obj) => {
         let material = obj._material;

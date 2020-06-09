@@ -64,7 +64,7 @@ export function load(gl, url, callback){
         }
     }
 
-    function getData( gltf, primitive) {  
+    function getData( gltf, primitive, w) {  
       let data = [];
        if(primitive>=0) {
   
@@ -104,11 +104,14 @@ export function load(gl, url, callback){
               break;
         }
 
+        if(w)
+        console.log(accessor.componentType, gl.UNSIGNED_BYTE, gl.UNSIGNED_SHORT, gl.UNSIGNED_INT)
       } 
+      
       return data;
     } 
     
-    gltf.meshes.forEach(mesh => {
+    gltf.meshes.forEach((mesh,index) => {
       let name = mesh.name;
 
       let curMesh = {
@@ -122,9 +125,9 @@ export function load(gl, url, callback){
       curMesh.v = getData( gltf , mesh.primitives[0].attributes['POSITION']);
       curMesh.vn = getData(gltf, mesh.primitives[0].attributes['NORMAL']);
       curMesh.vt = getData( gltf, mesh.primitives[0].attributes['TEXCOORD_0']);
-      curMesh.ind =  getData( gltf, mesh.primitives[0]['indices']);
+      curMesh.ind =  getData( gltf, mesh.primitives[0]['indices'], 1);
 
-      // if(curMesh.ind.length*3 !== curMesh.v.length) {
+      if(curMesh.ind.length*3 !== curMesh.v.length) {
       //   let v = curMesh.v, ind = curMesh.ind, vn = curMesh.vn, vt = curMesh.vt;
       //   let newV = [], newInd = [], newVn = [], newVt = [];
       //   ind.forEach((id, index)=>{
@@ -138,9 +141,13 @@ export function load(gl, url, callback){
       //   curMesh.vn = newVn;
       //   curMesh.vt = newVt;
       //   curMesh.ind = newInd;
-      // }
+      } else {
+        
+      }
 
-      meshes.push(curMesh)
+      // if(index==2) {
+        meshes.push(curMesh)
+      // }
 
     })
 

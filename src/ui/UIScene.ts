@@ -21,6 +21,10 @@ export class UIScene {
   public nodes: any[] = [];
   // 渲染目标池
   public pool: Object[] = [];
+
+  //
+  public isLineMode: boolean = false;
+  
   constructor(render:UIRender) {
     // DEPTH_TEST: depthFunc
     // BLEND: blendFunc

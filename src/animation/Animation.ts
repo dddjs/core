@@ -47,11 +47,11 @@ export class Animation {
   constructor(public _target: Object3d, public _canStop: boolean = true) {
 
   }
-
+  // 设置目标
   setTarget(target: Object3d) {
     this._target = target;
   }
-
+  // 动画更新
   updateAnimation() {
     // 动画 外部更新 方法
     if (!this._oneMoreTime || this._isPausing) return;
@@ -64,14 +64,14 @@ export class Animation {
     return isRunning;
   }
 
-  // 子类实现
+  // 初始状态重置
   initialize(width: number, height: number, parentWidth: number, parentHeight: number) {
     // 场景基本信息。。。
     this.reset();
     this._initialized = true;
   }
 
-  // main 
+  // 需要子类实现 
   applyTransformation(interpolatedTime) {
     //  扩展入口 - 子类实现
     // 子类实现此方法根据插值时间来应用其转化效果，比如说透明度动画，在时间0.5时的透明度等；interpolatedTime是0～1之间的规整化时间；
@@ -240,16 +240,17 @@ export class Animation {
   }
 
   // 基本操作
+  // 开始
   start() {
     // 第一次调用getTransformation时开始执行动画
     this.setStartTime(-1);
   }
-
+  // 开始
   startNow() {
     // 在当前时间开始执行动画；
     this.setStartTime(this.__getCurrentTime());
   }
-
+  // 暂停
   pause() {
     if (this._started && !this._ended && !this._isPausing) {
       // pause
@@ -258,7 +259,7 @@ export class Animation {
       this.fireAnimationPause()
     }
   }
-
+  // 暂停后的启动
   resume() {
     if (this._isPausing) {
       this._isPausing = false;
@@ -266,7 +267,7 @@ export class Animation {
       this._pauseTime = 0;
     }
   }
-
+  // 取消
   cancel() {
     if (this._started && !this._ended) {
       this.fireAnimationEnd();
@@ -278,7 +279,7 @@ export class Animation {
     this._more = false;
     this._oneMoreTime = false;
   }
-
+  // 重置
   reset() {
     this._initialized = false;
     this._cycleFlip = false;
@@ -296,27 +297,27 @@ export class Animation {
     }
   }
 
-  // 基本状态
+  // 初始状态
   isInitialized() {
     return this._initialized;
   }
-
+  // 开始？
   hasStarted() {
     return this._started;
   }
-
+  // 运行？
   isRunning() {
     return this._started && !this._ended;
   }
-
+  // 结束？
   hasEnded() {
     return this._ended;
   }
-
+  // 
   isFillEnabled() {
     return this._fillEnabled;
   }
-
+  // 取消？
   isCanceled() {
     return this._startTime == -1;
   }
@@ -360,7 +361,7 @@ export class Animation {
       }
     }
   }
-
+  // 延时效果
   setStartTime(startTimeMillis: number) {
     this._startTime = startTimeMillis;
     this._started = this._ended = false;
@@ -370,7 +371,6 @@ export class Animation {
     this._pauseTime = 0;
     this._more = true;
     this._oneMoreTime = true;
-
   }
 }
 

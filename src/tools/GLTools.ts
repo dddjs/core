@@ -1,7 +1,7 @@
 export class GLTools {
 
   // create buffer object
-  static createVBO(gl: WebGLRenderingContext, data: Float32Array, isIndex: boolean = false, bufferStatic: any = true) {
+  static createVBO(gl: WebGLRenderingContext, data: Float32Array|Uint32Array, isIndex: boolean = false, bufferStatic: any = true) {
     let usage: number | null = null;
     let target = isIndex ? gl.ELEMENT_ARRAY_BUFFER : gl.ARRAY_BUFFER;
     switch (bufferStatic) {

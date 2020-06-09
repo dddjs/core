@@ -6,11 +6,11 @@ export class Gemotry {
   private _indices: Uint16Array;
 
   setVertices(data: number[] = []) {
-    this._vertices = new Float32Array(data)
+    this._vertices = Array.isArray(data)?new Float32Array(data):data;
   }
 
   setNormals(data: number[] = []) {
-    this._normals = new Float32Array(data)
+    this._normals = Array.isArray(data)?new Float32Array(data):data;
   }
 
   // setColors(data: number[] = []) {
@@ -18,11 +18,12 @@ export class Gemotry {
   // }
 
   setTextCoords(data: number[] = []) {
-    this._textCoords = new Float32Array(data)
+    
+    this._textCoords = Array.isArray(data)?new Float32Array(data):data;
   }
 
   setIndices(data: number[] = []) {
-    this._indices = new Uint16Array(data)
+    this._indices = Array.isArray(data)?new Uint16Array(data):data;
   }
 
   get vertices() {
