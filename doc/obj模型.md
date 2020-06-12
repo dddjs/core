@@ -16,7 +16,8 @@
 
 
 ## [gltf 格式简介](https://blog.csdn.net/qq_31709249/article/details/86477520)
-> [检查gltf模型是否正确](https://techbrood.com/tool?p=gltf-viewer)
+> [threejs检查gltf模型是否正确](https://techbrood.com/tool?p=gltf-viewer)
+> [babylonjs检查gltf模型是否正确](https://sandbox.babylonjs.com/)
 
 - 可验证模型错误
 - 可查看骨骼和动画

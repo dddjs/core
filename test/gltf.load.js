@@ -104,8 +104,8 @@ export function load(gl, url, callback){
               break;
         }
 
-        if(w)
-        console.log(accessor.componentType, gl.UNSIGNED_BYTE, gl.UNSIGNED_SHORT, gl.UNSIGNED_INT)
+        // if(w)
+        // console.log(accessor.componentType, gl.UNSIGNED_BYTE, gl.UNSIGNED_SHORT, gl.UNSIGNED_INT)
       } 
       
       return data;

@@ -29,24 +29,31 @@ var render = new DDD.UIRender(client);
 var scene2 = new DDD.UIScene(render);
 var scene = new DDD.UIScene(render);
 
+scene2.disabled = true;
 
+// scene.viewport = [0,0,window.innerWidth/2.0, window.innerHeight]
+// scene.isLineMode = true;//
 
-scene.viewport = [0,0,window.innerWidth/2.0, window.innerHeight]
-scene.isLineMode = true;//
-
-scene2.viewport = [window.innerWidth/2.0, 0, window.innerWidth/2.0, window.innerHeight]
+// scene2.viewport = [window.innerWidth/2.0, 0, window.innerWidth/2.0, window.innerHeight]
+// scene2.viewport = [window.innerWidth/2.0, 0, window.innerWidth/2.0, window.innerHeight]
 // scene2.clearColor = new DDD.Color()
-scene2.setClearColor(1,0,0,1)
-scene.setAmbientColor(.8,0.8,0.8,1)
+// scene2.setClearColor(1,0,0,1)
+// scene.setAmbientColor(.8,0.8,0.8,1)
 // scene.ambientColor = new DDD.Color(.8,0.8,0.8,1)//(0,0,0,1);//
 // scene2.clearColor
 // scene2.add(center)
+
+var alight = new DDD.AmbientLight({color:new DDD.Color(1,0,0,1), intensity: 2.0})
+var dlight = new DDD.DirectionalLight({color: new DDD.Color(1,0,0,1), intensity: 2.0, direct: new DDD.Vec3(.5, 0 ,-.5)})
+scene.addLight(dlight);
 
 var camera2 = new DDD.UICamera(scene2);
 var camera2_1 = new DDD.UICamera(scene2);
 var camera = new DDD.UICamera(scene);
 window.camera = camera;
 
+camera.viewport = [0, 0, window.innerWidth, window.innerHeight];
+camera2.viewport = [0, 0, window.innerWidth, window.innerHeight];
 camera2_1.viewport = [window.innerWidth-100, 0, 100, 100];
 // camera2_1.rotateY(1, true);
 camera2_1.rotateOnWorldAxis( DDD.Vec3.X, Math.PI/2.0)
@@ -54,10 +61,10 @@ camera2_1.lookAt(0,0,0)
 
 
 // scene2.camera = camera;
-// gltfLoader.load(client.ctx,'./plane.gltf', (meshes)=>{
+gltfLoader.load(client.ctx,'./plane.gltf', (meshes)=>{
   // gltfLoader.load(client.ctx,'./Squirtle.gltf', (meshes)=>{
   // gltfLoader.load(client.ctx,'./jian/index.gltf', (meshes)=>{
-    gltfLoader.load(client.ctx,'./elphant/index.gltf', (meshes)=>{
+    // gltfLoader.load(client.ctx,'./elphant/index.gltf', (meshes)=>{
     // gltfLoader.load(client.ctx,'./pcube.gltf', (meshes)=>{
       // gltfLoader.load('./gubi/index.gltf', (meshes)=>{
 // loader.objLoad('./elphant/index.obj', (meshes)=>{
@@ -79,18 +86,18 @@ camera2_1.lookAt(0,0,0)
         var mesh = new DDD.Mesh(g, v, vn, vt, ind)
         // mesh.setPosition(0,0,0)
         console.log(mesh)
-        // mesh._material = new DDD.UIMaterial({
-        //   color: new DDD.Color(1,1,0,1)
-        // })
-        mesh._material = new DDD.UITextureMaterial({
-          // image: "assets/momo.png",
-          // image: `./gb/0.jpg`,
-          // image: `./gubi/tietu2.JPG`,
-          image: `./elphant/elphant/1.jpeg`,
-          // image: `./tex/${g}.png`,
-          // image: `./jian/chartlet/0.png`,
-        });
-        mesh._material.mode = 'line'
+        mesh._material = new DDD.UIMaterial({
+          color: new DDD.Color(1,1,0,1)
+        })
+        // mesh._material = new DDD.UITextureMaterial({
+        //   // image: "assets/momo.png",
+        //   // image: `./gb/0.jpg`,
+        //   // image: `./gubi/tietu2.JPG`,
+        //   image: `./elphant/elphant/1.jpeg`,
+        //   // image: `./tex/${g}.png`,
+        //   // image: `./jian/chartlet/0.png`,
+        // });
+        // mesh._material.mode = 'line'
         // mesh._material.isLineMode  = true;
         // mesh.scaling(.05,.05,.05)
         // mesh.scaling(.5,.5,.5)
@@ -130,8 +137,8 @@ camera2_1.lookAt(0,0,0)
     // })
 
   
-  pare.scaling(.01,.01,.01)
-  // pare.scaling(.5,.5,.5)
+  // pare.scaling(.01,.01,.01)
+  pare.scaling(.5,.5,.5)
   // pare.scaling(.05,.05,.05)
   scene2.add(pare)
 })
@@ -214,7 +221,7 @@ center._material = colorMaterial;
 // render.addRenderObject(center)
 
 
-// scene.add(center)
+scene.add(center)
 // scene.add(light);
 
 

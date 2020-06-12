@@ -3,7 +3,7 @@ export class Gemotry {
   private _normals: Float32Array;
   // private _colors: Float32Array;
   private _textCoords: Float32Array;
-  private _indices: Uint16Array;
+  private _indices: Uint8Array|Uint16Array|Uint32Array;
 
   setVertices(data: number[] = []) {
     this._vertices = Array.isArray(data)?new Float32Array(data):data;

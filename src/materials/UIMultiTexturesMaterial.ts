@@ -2,6 +2,7 @@ import { UIMaterial } from "./UIMaterial";
 import { ShaderChunk } from "./chunks/ShaderChunk";
 import { GLTools } from "../tools/GLTools";
 import { ImagesLoaded } from "../tools/ImagesLoaded";
+import { UIScene } from "../ui/UIScene";
 
 
 export class UIMultiTexturesMaterial extends UIMaterial {
@@ -18,7 +19,7 @@ export class UIMultiTexturesMaterial extends UIMaterial {
     }
   }
 
-  shaderSource() {
+  shaderSource(scene: UIScene) {
     let vert = `
     attribute vec2 a_TextCoord;
     varying   vec4 vColor;
@@ -36,7 +37,7 @@ export class UIMultiTexturesMaterial extends UIMaterial {
       gl_FragColor   = smpColor1 * smpColor0;
       `;
 
-    this.shader = new ShaderChunk(vert, vertMain, frag, fragMain)
+    this.shader = new ShaderChunk(scene, vert, vertMain, frag, fragMain)
   }
 
   handle() {

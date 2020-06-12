@@ -1,6 +1,7 @@
 import { GLTools } from './../tools/GLTools';
 import { UIMaterial } from "./UIMaterial";
 import { ShaderChunk } from "./chunks/ShaderChunk";
+import { UIScene } from '../ui/UIScene';
 
 export class UIVideoMaterial extends UIMaterial {
   // text map
@@ -64,7 +65,7 @@ export class UIVideoMaterial extends UIMaterial {
     this._video && this._video.pause()
   }
 
-  shaderSource() {
+  shaderSource(scene: UIScene) {
     let vert = `
     attribute vec2 a_TextCoord;
     varying vec2 v_TexCoord;`,
@@ -74,7 +75,7 @@ export class UIVideoMaterial extends UIMaterial {
     varying vec2 v_TexCoord;`,
       fragMain = "gl_FragColor = texture2D(u_Sampler, v_TexCoord);";
 
-    this.shader = new ShaderChunk(vert, vertMain, frag, fragMain)
+    this.shader = new ShaderChunk(scene, vert, vertMain, frag, fragMain)
   }
 
   handle() {

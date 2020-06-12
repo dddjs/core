@@ -2,12 +2,14 @@ import { Color } from "../core/Color";
 import { Object3d } from "../core/Object3d";
 import {UIRender} from './UIRender';
 import {UICamera} from './UICamera';
+import { Light } from "../lights/Light";
 
 // https://baike.baidu.com/item/%E5%85%AB%E5%8F%89%E6%A0%91/5635733?fr=aladdin
 // 八叉树就是用在3D空间中的场景管理，可以很快地知道物体在3D场景中的位置，或侦测与其它物体是否有碰撞以及是否在可视范围内。
 export class UIScene {
   public camera: UICamera|null = null;
   public cameras: UICamera[] = [];
+  public lights: Light[] = [];
   // 场景视口
   public viewport: number[] = [0.0, 0.0, window.innerWidth, window.innerHeight];
   // 背景色
@@ -24,6 +26,8 @@ export class UIScene {
 
   //
   public isLineMode: boolean = false;
+  //
+  public disabled: boolean = false;
   
   constructor(render:UIRender) {
     // DEPTH_TEST: depthFunc
@@ -52,6 +56,16 @@ export class UIScene {
     this.ambientColor.g = g;
     this.ambientColor.b = b;
     this.ambientColor.a = a;
+  }
+
+  addLight(light: Light) {
+    this.lights.push(light);
+  }
+
+  findLightByType(lightType) {
+    return this.lights.filter(light=>{
+      return light instanceof lightType;
+    })
   }
 
   //

@@ -2,6 +2,7 @@ import { UIMaterial } from "./UIMaterial";
 import { ShaderChunk } from "./chunks/ShaderChunk";
 import { GLTools } from "../tools/GLTools";
 import { ImagesLoaded } from "../tools/ImagesLoaded";
+import { UIScene } from "../ui/UIScene";
 
 
 export class UITextureMaterial extends UIMaterial {
@@ -19,7 +20,7 @@ export class UITextureMaterial extends UIMaterial {
     }
   }
 
-  shaderSource() {
+  shaderSource(scene: UIScene) {
     let vert = `
     attribute vec2 a_TextCoord;
     varying vec2 v_TexCoord;`,
@@ -29,7 +30,7 @@ export class UITextureMaterial extends UIMaterial {
     varying vec2 v_TexCoord;`,
       fragMain = "gl_FragColor = texture2D(u_Sampler, v_TexCoord);";
 
-    this.shader = new ShaderChunk(vert, vertMain, frag, fragMain)
+    this.shader = new ShaderChunk(scene, vert, vertMain, frag, fragMain)
   }
 
   handle() {

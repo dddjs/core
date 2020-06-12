@@ -22,7 +22,7 @@ export class UIRender extends Base {
   }
 
   enableExtension(gl){
-    gl.getExtension("OES_standard_derivatives");
+    // gl.getExtension("OES_standard_derivatives");
     gl.getExtension("OES_element_index_uint");
   }
 
@@ -48,8 +48,6 @@ export class UIRender extends Base {
         glmode = gl.TRIANGLE_FAN;
         break;
       case 'triangle':
-        glmode = gl.TRIANGLES;
-        break;
       default:
         glmode = gl.TRIANGLES;
         break;
@@ -78,10 +76,8 @@ export class UIRender extends Base {
         _type = gl.UNSIGNED_INT;
           break;
       case "Float32Array":
-        _type = gl.UNSIGNED_INT;
-          break;
       default:
-        console.log(dataType)
+        _type = gl.UNSIGNED_INT;
     }
     return _type;
   }
@@ -111,7 +107,7 @@ export class UIRender extends Base {
         gl.drawArrays(drawMode, 0, 6);
       }
     } else {
-      let type = this.drawType(gl, obj.indices.constructor.name)
+      let type =  this.drawType(gl, obj.indices.constructor.name)
       if (this.isLineMode || scene.isLineMode || ["line", 'lineloop', 'linestrip'].indexOf(material.mode)>-1 ) {
         // debugger
         
@@ -194,18 +190,19 @@ export class UIRender extends Base {
     // gl.enable(gl.CULL_FACE);
     // gl.frontFace(gl.CW)
     this.scenes.forEach(scene=>{
+      if(scene.disabled) return;
       scene.walkTree((obj) => {
         let material = obj._material;
         if (!material || obj._renderInitial) return;
-        material.init(gl);
+        material.init(gl, scene);
         obj._renderInitial = true;
         material.config['position'] = GLTools.createVBO(gl, obj.vertices||[], false, true);
-        // if(obj.normals&&obj.normals.length>0) {
+        if(obj.normals&&obj.normals.length>0) {
           material.config['normal'] = GLTools.createVBO(gl, obj.normals||[], false, true);
-        // }
-        // if(obj.textCoords.length>0){
+        }
+        if(obj.textCoords.length>0){
           material.config['a_TextCoord'] = GLTools.createVBO(gl, obj.textCoords||[], false, true);
-        // }
+        }
 
         let ibo ;
         if(obj.indices.length>0){

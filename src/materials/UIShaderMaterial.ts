@@ -1,5 +1,6 @@
 import { UIMaterial } from "./UIMaterial";
 import { ShaderChunk } from "./chunks/ShaderChunk";
+import { UIScene } from "../ui/UIScene";
 
 
 export class UIShaderMaterial extends UIMaterial {
@@ -10,7 +11,7 @@ export class UIShaderMaterial extends UIMaterial {
 
   }
 
-  shaderSource() {
+  shaderSource(scene: UIScene) {
     let vert = `
     attribute vec2 a_TextCoord;
     varying vec2 v_TexCoord;`,
@@ -20,7 +21,7 @@ export class UIShaderMaterial extends UIMaterial {
     varying vec2 v_TexCoord;`,
       fragMain = "gl_FragColor = textureCube(u_Sampler, vec3(v_TexCoord.xy,1));";
 
-    this.shader = new ShaderChunk(vert, vertMain, frag, fragMain)
+    this.shader = new ShaderChunk(scene, vert, vertMain, frag, fragMain)
   }
 
   handle() {

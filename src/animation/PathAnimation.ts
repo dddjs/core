@@ -28,7 +28,7 @@ export class PathAnimation extends Animation {
       }
 
       if(this.isRotAuto) {
-        let prepos = this.lastRotPosition?.clone();
+        let prepos:Vec3|undefined = this.lastRotPosition!.clone();
 
         let toler = 0.0001; // Radian
         this.nowDirection = pos.clone().sub(prepos!.x+0.0001, prepos!.y+0.0002, prepos!.z+0.0003);

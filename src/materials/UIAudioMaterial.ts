@@ -1,6 +1,7 @@
 import { GLTools } from './../tools/GLTools';
 import { UIMaterial } from "./UIMaterial";
 import { ShaderChunk } from "./chunks/ShaderChunk";
+import { UIScene } from '../ui/UIScene';
 
 export class UIAudioMaterial extends UIMaterial {
   // https://www.web-tinker.com/article/20498.html  绘制音乐的波形图
@@ -102,7 +103,7 @@ export class UIAudioMaterial extends UIMaterial {
     this._audio && this._audio.pause()
   }
 
-  shaderSource() {
+  shaderSource(scene: UIScene) {
     let vert = `
     attribute vec2 a_TextCoord;
     varying vec2 v_TexCoord;`,
@@ -112,7 +113,7 @@ export class UIAudioMaterial extends UIMaterial {
     varying vec2 v_TexCoord;`,
       fragMain = "gl_FragColor = texture2D(u_Sampler, v_TexCoord);";
 
-    this.shader = new ShaderChunk(vert, vertMain, frag, fragMain)
+    this.shader = new ShaderChunk(scene, vert, vertMain, frag, fragMain)
   }
 
   handle() {

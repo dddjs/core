@@ -2,7 +2,8 @@ import Base from "../Base";
 import { CanvasEvent } from "../event/CanvasEvent";
 
 export class UICanvas extends Base {
-  ctx: WebGLRenderingContext | null; //| CanvasRenderingContext2D 
+  ctx: WebGLRenderingContext| WebGL2RenderingContext| CanvasRenderingContext2D | ImageBitmapRenderingContext | null; //| CanvasRenderingContext2D 
+  isWebGL2: boolean = true;
   x: number;
   y: number;
   left: number;
@@ -11,6 +12,7 @@ export class UICanvas extends Base {
   bottom: number;
   width: number;
   height: number;
+
   _option: object = {}
   constructor(public canvas: HTMLCanvasElement, option: object = {}) {
     super()
@@ -27,7 +29,7 @@ export class UICanvas extends Base {
       // failIfMajorPerformanceCaveat: 0,//boolean值表明在一个系统性能低的环境创建该上下文。
       antialias: true,
       depth: true,
-      alpha: true,
+      alpha: false,
       ...option
     }
     this.initEvent();
@@ -41,16 +43,17 @@ export class UICanvas extends Base {
   }
 
   private initCanvasCtx(option) {
+    var gl:WebGLRenderingContext| WebGL2RenderingContext| CanvasRenderingContext2D | ImageBitmapRenderingContext | null ;//= this.canvas.getContext('webgl2');
+    var isWebGL2 = true;  
+    // if(!gl) {
+      gl = this.canvas.getContext('webgl', option) || this.canvas.getContext('experimental-webgl', option);
+      isWebGL2 = false;
+    // }
 
-    try {
-      this.ctx = this.canvas.getContext('webgl', option) || this.canvas.getContext('experimental-webgl', option);
-    } catch (e) {
-      // this.ctx = this.canvas.getContext('webgl2', option) || this.canvas.getContext('experimental-webgl2', option);
-    } finally {
+    this.ctx = gl;
+    this.isWebGL2 = isWebGL2;
 
-    }
-
-    if (this.ctx === null) {
+    if (gl === null) {
       throw new Error('Your browser not support the webgl .')
     } else {
       return this.ctx;

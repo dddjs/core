@@ -3,6 +3,7 @@ import { GLTools } from "../tools/GLTools";
 import { Color } from "../core/Color";
 import { UIScene } from "../ui/UIScene";
 import { UICamera } from "../ui/UICamera";
+import { Mat4 } from "../math/Mat4";
 
 export class UIMaterial {
   // color
@@ -23,13 +24,13 @@ export class UIMaterial {
   constructor( config: object = {}) {
     this.config = {
       uColor: new Color(128/255.0,128/255.0,128/255.0,1),
-      uAmbientColor: new Color(1,1,1,1),
+      // uAmbientColor: new Color(1,1,1,1),
       aBarycentric: new Float32Array([1,0,0, 1,1,0, 0,0,1, 0,0,0]),
       ...config
     }
   }
 
-  shaderSource() {
+  shaderSource(scene: UIScene) {
     let vert = `
     uniform vec4 uColor;
     
@@ -38,18 +39,18 @@ export class UIMaterial {
       frag = "varying vec4 vColor;",
       fragMain = "gl_FragColor = vColor;";
 
-    this.shader = new ShaderChunk(vert, vertMain, frag, fragMain)
+    this.shader = new ShaderChunk(scene,vert, vertMain, frag, fragMain)
   }
 
   handle() {
     this.isReady = true;
   }
 
-  init(ctx: WebGLRenderingContext) {
+  init(ctx: WebGLRenderingContext, scene: UIScene) {
     this.ctx = ctx;
-    this.shaderSource()
+    this.shaderSource(scene)
     if (!this.shader) return;
-    this.config.aBarycentric = GLTools.createVBO(ctx, this.config.aBarycentric, false, true);
+    // this.config.aBarycentric = GLTools.createVBO(ctx, this.config.aBarycentric, false, true);
     this.vertShader = GLTools.createShader(ctx, this.shader.vertSource, ctx.VERTEX_SHADER);
     this.fragShader = GLTools.createShader(ctx, this.shader.fragSource, ctx.FRAGMENT_SHADER);
     if (this.vertShader && this.fragShader) {
@@ -134,16 +135,35 @@ export class UIMaterial {
             this.uploadItem(item, obj.getMatrixOnWorld().elements)
           }
             break;
+          case 'invMatrix': {
+            // 模型矩阵 逆转置矩阵
+            let mMat = obj.getMatrixOnWorld();
+            let invMatrix = mMat.clone().inverse().transpose();
+            this.uploadItem(item, invMatrix.elements)
+          }break;
+          case 'u_viewPosition':{
+            this.uploadItem(item, [camera._position.x,camera._position.y,camera._position.z])
+          } break;
           case 'uColor':{
             this.uploadItem(item, this.config[item].elements)
           } break;
           case 'uAmbientColor':{
             this.uploadItem(item, scene.ambientColor.elements)
           } break;
-          case 'Normalmatrix':{
-            this.uploadItem(item, obj.getMatrixOnWorld().leftDot(camera!.viewMatrix).inverse().transpose().elements)
+          // 平行光
+          case 'uLightingDirection':{
+            this.uploadItem(item, [.5, .5, -.5])
           } break;
-          // case '':{} break;
+          case 'uDirectionalColor':{
+            this.uploadItem(item, [.1,.1,.1])
+          } break;
+          // 点光
+          case 'u_LightPosition':{
+            this.uploadItem(item, [-1, 1, 0])
+          } break;
+          case 'u_LightColor':{
+            this.uploadItem(item, [1,0,0])
+          } break;
           default: {
             this.uploadItem(item, this.config[item])
           }
@@ -157,7 +177,7 @@ export class UIMaterial {
     let location = this.locations[name],
       prefix = location.prefix,
       type = location.type;
-debugger
+
       switch (type) {
       case 'bool':
       case 'int':
