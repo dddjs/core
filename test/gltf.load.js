@@ -127,28 +127,8 @@ export function load(gl, url, callback){
       curMesh.vt = getData( gltf, mesh.primitives[0].attributes['TEXCOORD_0']);
       curMesh.ind =  getData( gltf, mesh.primitives[0]['indices'], 1);
 
-      if(curMesh.ind.length*3 !== curMesh.v.length) {
-      //   let v = curMesh.v, ind = curMesh.ind, vn = curMesh.vn, vt = curMesh.vt;
-      //   let newV = [], newInd = [], newVn = [], newVt = [];
-      //   ind.forEach((id, index)=>{
-      //     newInd.push(index);
-      //     newV.push(v[id*3],v[id*3+1], v[id*3+2]);
-      //     newVn.push(vn[id*3], vn[id*3+1], vn[id*3+2]);
-      //     newVt.push(vt[id*2], vt[id*2+1])
-      //   })
 
-      //   curMesh.v = newV;
-      //   curMesh.vn = newVn;
-      //   curMesh.vt = newVt;
-      //   curMesh.ind = newInd;
-      } else {
-        
-      }
-
-      // if(index==2) {
         meshes.push(curMesh)
-      // }
-
     })
 
     console.log(meshes)

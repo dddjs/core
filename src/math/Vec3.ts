@@ -7,6 +7,10 @@ export class Vec3 extends Base {
     super()
   }
 
+  get elements(){
+    return [this.x, this.y, this.z];
+  }
+
   set(x: number, y: number, z: number) {
     this.x = x;
     this.y = y;

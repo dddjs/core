@@ -29,7 +29,7 @@ var render = new DDD.UIRender(client);
 var scene2 = new DDD.UIScene(render);
 var scene = new DDD.UIScene(render);
 
-scene2.disabled = true;
+scene.disabled = true;
 
 // scene.viewport = [0,0,window.innerWidth/2.0, window.innerHeight]
 // scene.isLineMode = true;//
@@ -61,10 +61,10 @@ camera2_1.lookAt(0,0,0)
 
 
 // scene2.camera = camera;
-gltfLoader.load(client.ctx,'./plane.gltf', (meshes)=>{
+// gltfLoader.load(client.ctx,'./plane.gltf', (meshes)=>{
   // gltfLoader.load(client.ctx,'./Squirtle.gltf', (meshes)=>{
   // gltfLoader.load(client.ctx,'./jian/index.gltf', (meshes)=>{
-    // gltfLoader.load(client.ctx,'./elphant/index.gltf', (meshes)=>{
+    gltfLoader.load(client.ctx,'./elphant/index.gltf', (meshes)=>{
     // gltfLoader.load(client.ctx,'./pcube.gltf', (meshes)=>{
       // gltfLoader.load('./gubi/index.gltf', (meshes)=>{
 // loader.objLoad('./elphant/index.obj', (meshes)=>{
@@ -86,17 +86,17 @@ gltfLoader.load(client.ctx,'./plane.gltf', (meshes)=>{
         var mesh = new DDD.Mesh(g, v, vn, vt, ind)
         // mesh.setPosition(0,0,0)
         console.log(mesh)
-        mesh._material = new DDD.UIMaterial({
-          color: new DDD.Color(1,1,0,1)
-        })
-        // mesh._material = new DDD.UITextureMaterial({
-        //   // image: "assets/momo.png",
-        //   // image: `./gb/0.jpg`,
-        //   // image: `./gubi/tietu2.JPG`,
-        //   image: `./elphant/elphant/1.jpeg`,
-        //   // image: `./tex/${g}.png`,
-        //   // image: `./jian/chartlet/0.png`,
-        // });
+        // mesh._material = new DDD.UIMaterial({
+        //   color: new DDD.Color(1,1,0,1)
+        // })
+        mesh._material = new DDD.UITextureMaterial({
+          // image: "assets/momo.png",
+          // image: `./gb/0.jpg`,
+          // image: `./gubi/tietu2.JPG`,
+          image: `./elphant/elphant/1.jpeg`,
+          // image: `./tex/${g}.png`,
+          // image: `./jian/chartlet/0.png`,
+        });
         // mesh._material.mode = 'line'
         // mesh._material.isLineMode  = true;
         // mesh.scaling(.05,.05,.05)
@@ -137,8 +137,8 @@ gltfLoader.load(client.ctx,'./plane.gltf', (meshes)=>{
     // })
 
   
-  // pare.scaling(.01,.01,.01)
-  pare.scaling(.5,.5,.5)
+  pare.scaling(.01,.01,.01)
+  // pare.scaling(.5,.5,.5)
   // pare.scaling(.05,.05,.05)
   scene2.add(pare)
 })

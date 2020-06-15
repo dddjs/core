@@ -9,7 +9,7 @@ import { Light } from "../lights/Light";
 export class UIScene {
   public camera: UICamera|null = null;
   public cameras: UICamera[] = [];
-  public lights: Light[] = [];
+  
   // 场景视口
   public viewport: number[] = [0.0, 0.0, window.innerWidth, window.innerHeight];
   // 背景色
@@ -19,6 +19,10 @@ export class UIScene {
   public depthFunc: number;
 
   public ambientColor: Color = new Color(1,1,1,1);
+  public directionalLight: Light ;
+  public pointLights: Light[] = [];
+  public spotLights: Light[] = [];
+  // public lights: Light[] = [];
 
   public nodes: any[] = [];
   // 渲染目标池
@@ -59,7 +63,14 @@ export class UIScene {
   }
 
   addLight(light: Light) {
-    this.lights.push(light);
+    switch(light.mType) {
+      case 'pointLight':{
+        this.pointLights.push(light);
+      }break;
+      case 'spotLight':{
+        this.spotLights.push(light)
+      }
+    }
   }
 
   findLightByType(lightType) {

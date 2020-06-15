@@ -141,8 +141,8 @@ export class UIMaterial {
             let invMatrix = mMat.clone().inverse().transpose();
             this.uploadItem(item, invMatrix.elements)
           }break;
-          case 'u_viewPosition':{
-            this.uploadItem(item, [camera._position.x,camera._position.y,camera._position.z])
+          case 'uViewPosition':{
+            this.uploadItem(item, camera._position.elements)
           } break;
           case 'uColor':{
             this.uploadItem(item, this.config[item].elements)
@@ -151,19 +151,116 @@ export class UIMaterial {
             this.uploadItem(item, scene.ambientColor.elements)
           } break;
           // 平行光
-          case 'uLightingDirection':{
+          case 'uDirLightDirection':{
             this.uploadItem(item, [.5, .5, -.5])
           } break;
-          case 'uDirectionalColor':{
+          case 'uDirLightColor':{
             this.uploadItem(item, [.1,.1,.1])
           } break;
-          // 点光
-          case 'u_LightPosition':{
-            this.uploadItem(item, [-1, 1, 0])
+          case 'uDirLightSpecularColor':{
+            this.uploadItem(item, [1,1,1])
           } break;
-          case 'u_LightColor':{
+          case 'uDirLightShininess':{
+            this.uploadItem(item, .01)
+          } break;
+
+          // 点光
+          case 'uPointLightPosition':{
+            this.uploadItem(item, [0, 1, 1])
+          } break;
+          case 'uPointLightColor':{
+            this.uploadItem(item, [0,0,1])
+          } break;
+          case 'uPointLightSpecularColor':{
+            this.uploadItem(item, [0,1,1])
+          } break;
+          case 'uPointLightShininess':{
+            this.uploadItem(item, 100)
+          } break;
+          case 'uPointLightDistance':{
+            this.uploadItem(item, 1)
+          } break;
+          // 聚光灯
+          case 'uSpotLightPosition':{
+            this.uploadItem(item, [0, .8, 1])
+          } break;
+          case 'uSpotLightDirection':{
+            this.uploadItem(item, [0, .8, -1])
+          } break;
+          case 'uSpotLightColor':{
             this.uploadItem(item, [1,0,0])
           } break;
+          case 'uSpotLightSpecularColor':{
+            this.uploadItem(item, [1,1,1])
+          } break;
+          case 'uSpotLightShiness':{
+            this.uploadItem(item, 100)
+          } break;
+          case 'uSpotLightDistance':{
+            this.uploadItem(item, 5)
+          } break;
+          case 'uSpotLightCutOff':{//锥形体的夹角
+            this.uploadItem(item, 25)
+          } break;
+          // 线光源
+          case 'uLineLightPosition1':{
+            this.uploadItem(item, [-1, .5, 1])
+          }break;
+          case 'uLineLightPosition2':{
+            this.uploadItem(item, [1, .5, 1])
+          }break;
+          case 'uLineLightDirection':{
+            this.uploadItem(item, [.0, .5, -1])
+          } break;
+          case 'uLineLightColor':{
+            this.uploadItem(item, [1, 0, 0])
+          } break;
+
+          case 'shininess': {
+            this.uploadItem(item, 20.);
+          }break;
+          case 'posLightPosition': {
+            this.uploadItem(item, [1.0, 1.0, 1.0]);
+          }break;
+          case 'posAmbientProduct': {
+            this.uploadItem(item, [0.2, 0.2, 0.2, 1.0]);
+          }break;
+          case 'posDiffuseProduct': {
+            this.uploadItem(item, [1.0, 1.0, 1.0, 1.0]);//
+          }break;
+          case 'posSpecularProduct': {
+            this.uploadItem(item, [1.0, 1.0, 1.0, 1.0]);//
+          }break;
+          case 'dirLightPosition': {
+            this.uploadItem(item, [1.0, 1.0, 1.0]);
+          }break;
+          case 'dirAmbientProduct': {
+            this.uploadItem(item, [0.2, 0.2, 0.2, 1.0]);
+          }break;
+          case 'dirDiffuseProduct': {
+            this.uploadItem(item, [1.0, 1.0, 1.0, 1.0]);//
+          }break;
+          case 'dirSpecularProduct': {
+            this.uploadItem(item, [1.0, 1.0, 1.0, 1.0]);//
+          }break;
+          case 'spotLightPosition': {
+            this.uploadItem(item, [1,0,3]);//
+          }break;
+          case 'spotAmbientProduct': {
+            this.uploadItem(item, [0.2, 0.2, 0.2, 1.0]);
+          }break;
+          case 'spotDiffuseProduct': {
+            this.uploadItem(item, [1.0, 1.0, 1.0, 1.0]);//
+          }break;
+          case 'spotSpecularProduct': {
+            this.uploadItem(item, [1.0, 1.0, 1.0, 1.0]);//
+          }break;
+          case 'spotLightDirection': {
+            this.uploadItem(item, [0.5,1.0,-2.0,1.0]);
+          }break;
+          case 'spotLightCutOff': {
+            this.uploadItem(item, 0.1);
+          }break;
           default: {
             this.uploadItem(item, this.config[item])
           }
@@ -187,7 +284,7 @@ export class UIMaterial {
           gl.vertexAttribPointer(location.value, 1, gl.FLOAT, false, 0, 0);
           gl.enableVertexAttribArray(location.value);
         } else {
-          gl.uniform1fv(location.value, v);
+          gl.uniform1f(location.value, v);
         }
       } break;
       case 'vec2':
