@@ -21,11 +21,11 @@ export class UIMultiTexturesMaterial extends UIMaterial {
 
   shaderSource(scene: UIScene) {
     let vert = `
-    attribute vec2 a_TextCoord;
+    attribute vec2 textCoord;
     varying   vec4 vColor;
     varying vec2 v_TexCoord;`,
       vertMain = `
-      v_TexCoord = a_TextCoord; 
+      v_TexCoord = textCoord; 
       `,
       frag = `
       uniform sampler2D texture0;

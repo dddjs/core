@@ -1,6 +1,6 @@
 import { GLTools } from './../tools/GLTools';
 import { UIMaterial } from "./UIMaterial";
-import { ShaderChunk } from "./chunks/ShaderChunk";
+import { SimpleChunk } from "./chunks/SimpleChunk";
 import { UIScene } from '../ui/UIScene';
 
 export class UIAudioMaterial extends UIMaterial {
@@ -105,15 +105,15 @@ export class UIAudioMaterial extends UIMaterial {
 
   shaderSource(scene: UIScene) {
     let vert = `
-    attribute vec2 a_TextCoord;
+    attribute vec2 textCoord;
     varying vec2 v_TexCoord;`,
-      vertMain = "v_TexCoord = a_TextCoord; ",
+      vertMain = "v_TexCoord = textCoord; ",
       frag = `
     uniform sampler2D u_Sampler;
     varying vec2 v_TexCoord;`,
       fragMain = "gl_FragColor = texture2D(u_Sampler, v_TexCoord);";
 
-    this.shader = new ShaderChunk(scene, vert, vertMain, frag, fragMain)
+    this.shader = new SimpleChunk(scene, vert, vertMain, frag, fragMain)
   }
 
   handle() {

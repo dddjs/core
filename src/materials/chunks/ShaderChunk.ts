@@ -9,31 +9,47 @@ export class ShaderChunk {
 
   compose(scene: UIScene) {
     this.vertSource = `
+    precision highp float;
+
     attribute vec3 position;
     attribute vec3 normal;
     uniform mat4 Pmatrix;
     uniform mat4 Vmatrix;
     uniform mat4 Mmatrix;
     uniform mat4 invMatrix;
+
+    uniform vec3 uViewPosition; 
     
     varying vec3 vNormal; 
     varying vec3 vPosition; 
+    varying float vDist;
+    varying vec3 vEye;
+    varying vec3 vPositionEye3;
     ${this.vert}
     void main(void) { 
-      gl_Position = Pmatrix*Vmatrix*Mmatrix*vec4(position, 1.);
+      gl_Position = Pmatrix*Vmatrix*Mmatrix*vec4(position, 1.0);
+
+      // 光照模型必须在同一个坐标系中运算, 这里获取视口坐标系的顶点位置
+      vec4 vertexPositionEye4 = Vmatrix*Mmatrix*vec4(position, 1.);
+      vPositionEye3 = vertexPositionEye4.xyz / vertexPositionEye4.w;
+
       ${this.vertMain} 
 
       vNormal= vec3(mat3(invMatrix) * normal); 
-      vPosition= vec3(Mmatrix * vec4(position, 1.0)); 
+      vPosition= vec3(Mmatrix * vec4(position, 1.)); 
 
       
-
+      vDist = gl_Position.w;//distance(vec3(Mmatrix * vec4(position, 1.)), uViewPosition);
+      vEye = uViewPosition;
     }
     `;
     this.fragSource = `
     precision highp float;
 
-    uniform vec3 uViewPosition; 
+    uniform vec3 uFogColor;
+    uniform vec2 uFogDist;
+
+    
 
     uniform vec4 uAmbientColor;
 
@@ -66,10 +82,14 @@ export class ShaderChunk {
 
     varying vec3 vNormal; 
     varying vec3 vPosition; 
+    varying float vDist;
+    varying vec3 vEye;
+    varying vec3 vPositionEye3;
     ${this.frag}
     void main(void) {
       gl_FragColor = vec4(1., 1., 1., 1.);
- 
+      
+      float fogFactor = clamp((uFogDist.y-vDist)/(uFogDist.y-uFogDist.x), 0., 1.);
 
       ${this.fragMain}
 
@@ -77,16 +97,16 @@ export class ShaderChunk {
       vec3 nPosition = normalize(vPosition.xyz);
 
       vec3 nDirLightDirection = normalize(uDirLightDirection);
-      vec3 nViewPosition = normalize(uViewPosition);
-      vec3 viewDirection = normalize(uViewPosition-vPosition.xyz);
+      vec3 nViewPosition = normalize(vEye);
+      vec3 viewDirection = normalize(vEye-vPosition.xyz);
 
       //计算平行光方向向量和顶点法线向量的点积，为避免出现负值，则取>=0的值
-      float dirLightDiffuseIntensity = max(dot(nNormal, nDirLightDirection), 0.0); 
+      float dirLightDiffuseIntensity = max(dot(nNormal, -nDirLightDirection), 0.0); 
       // 计算漫反射光的颜色
-      vec3 diffuse1 = uDirLightColor  * dirLightDiffuseIntensity; 
+      vec3 diffuse1 = uDirLightColor * dirLightDiffuseIntensity; 
 
       // 宾氏（Blinn）模型高光 - 镜面反射
-      vec3 halfwayDir = normalize(uDirLightDirection + uViewPosition);
+      vec3 halfwayDir = normalize(uDirLightDirection + vEye);
       float specularWeighting = pow(max(dot(nNormal, halfwayDir), 0.0), 1./uDirLightShininess);
       // 如果漫反射强度过低则将镜面光置零
       if(dirLightDiffuseIntensity<= 0.) 
@@ -100,7 +120,7 @@ export class ShaderChunk {
       // 点光
       vec3 nPointLightPosition = normalize(uPointLightPosition);
       vec3 pointLightDir = normalize(uPointLightPosition - vPosition.xyz);// 计算入射光线反方向并归一化
-      float pointLightDiffuseIntensity = max(dot(pointLightDir, nNormal), 0.0);// 计算入射角余弦值
+      float pointLightDiffuseIntensity = max(dot(-pointLightDir, nNormal), 0.0);// 计算入射角余弦值
       vec3 diffuse2 = uPointLightColor * pointLightDiffuseIntensity;// 计算平行光漫反射颜色vec3(0.);//
 
 
@@ -116,77 +136,90 @@ export class ShaderChunk {
       vec3 specular2 = uPointLightSpecularColor.rgb * specularWeighting2;// * step(cosTheta,0.0);
 
       // 聚光灯
-      vec3 nSpotLightPosition = normalize(uSpotLightPosition);
-      vec3 someDir = normalize(uSpotLightPosition - vPosition.xyz);// 计算入射光线反方向并归一化
-      vec3 nSpotLightDirection = normalize(uSpotLightDirection);
+      // 计算出方向指向光源的向量
+      vec3 vectorToLightSource = normalize(uSpotLightPosition - vPosition);
       
-      float currentCosThta = max(0.0,dot(-someDir, nSpotLightDirection));// 计算入射角余弦值
-      float diffuseIntensity = 0.0;
-      if(currentCosThta>cos(radians(uSpotLightCutOff/2.0) )) 
-      {
-        if(dot(someDir,nNormal) >0.0)
-        {
-          diffuseIntensity = pow(currentCosThta,1.0);   
-        }
-      }
-      vec3 diffuse3 = uSpotLightColor * diffuseIntensity;// 计算平行光漫反射颜色
+      // 通过点积计算出光线的亮度权重
+      float spotDiffuseLightWeighting = max(dot(nNormal, vectorToLightSource), .0);
 
+      vec3 diffuse3 = vec3(0.);
+      vec3 specular3 = vec3(.0);
+      // 只处理亮度大于 0 的区域
+      if(spotDiffuseLightWeighting >0.0)
+      {
+        float spotEffect = dot( normalize(uSpotLightDirection), normalize(-vectorToLightSource));// 计算入射角余弦值
+        
+        if(spotEffect > cos(radians(uSpotLightCutOff/2.0)))
+        {
+          const float spotExponent = 1.;
+          spotEffect = pow(spotEffect,spotExponent);   
+
+          // 计算出光线通过当前面之后折射出去的向量(r)
+          vec3 reflectionVector = normalize(reflect(-vectorToLightSource, nNormal));
+
+          // 眼睛坐标下的相机位于原点, 并沿着负z轴指向, 计算眼坐标中的视向量(v)
+          vec3 viewVectorEye = normalize(vPositionEye3);
+
+          // 计算出镜面反射的亮度权重
+          float rdotv = max(dot(reflectionVector, viewVectorEye), 0.0);
+          float spotSpecularIntensity =  pow(rdotv, uSpotLightShininess);
+
+          diffuse3 = spotEffect * uSpotLightColor * spotDiffuseLightWeighting ;// 计算平行光漫反射颜色
+          specular3 =  spotEffect * uSpotLightSpecularColor.rgb * spotSpecularIntensity ;
+
+        }
+
+        
+      }
+
+      // vec3 nSpotLightPosition = normalize(uSpotLightPosition);
+      // vec3 someDir = normalize(uSpotLightPosition - vPosition.xyz);// 计算入射光线反方向并归一化
+      // vec3 nSpotLightDirection = normalize(uSpotLightDirection);
+      
+      // float currentCosThta = max(0.0,dot(-someDir, nSpotLightDirection));// 计算入射角余弦值
+      // float diffuseIntensity = 0.0;
+      // if(currentCosThta>cos(radians(uSpotLightCutOff/2.0) )) 
+      // {
+      //   if(dot(someDir,nNormal) >0.0)
+      //   {
+      //     diffuseIntensity = pow(currentCosThta,1.);   
+      //   }
+      // }
+      // vec3 diffuse3 = uSpotLightColor * diffuseIntensity;// 计算平行光漫反射颜色
+      
 
       // 线光源
       vec3 lineAB = uLineLightPosition2.xyz - uLineLightPosition1.xyz;// A=>1,B=>2
       vec3 lineAP = vPosition.xyz - uLineLightPosition1.xyz;
       vec3 lineBP = vPosition.xyz - uLineLightPosition2.xyz;
       float minDistance = 0.0;
-      // float r = dot(lineAP, lineAB) / pow(length(lineAB), 2.0);
-      // if(r<=0.) {
-      //   minDistance = length(lineAP);
-      // } else if(r >=1.) {
-      //   minDistance = length(lineBP);
-      // } else {
-      // }
+      float r = dot(lineAP, lineAB) / pow(length(lineAB), 2.0);
+
       float lineLightIntensity = 0.;
-      if(dot(lineAP, lineAB)<0.) {
-        minDistance = length(lineAP);
-        lineLightIntensity = max(dot(-lineAP, nNormal), 0.0);
-      }else if(dot(lineBP, lineAB)>0.) {
-        minDistance = length(lineBP);
+      if(r>=0. && r<=1.)
+      {
+        vec3 lineCP =lineAP - r*lineAB; // 入射光线方向
 
-        lineLightIntensity = max(dot(-lineBP, nNormal), 0.0);
-      } else {
-        lineLightIntensity = 1.0;
-        minDistance = abs(dot(lineAB, lineAP))/length(lineAB);
+        vec3 someLineDir = normalize(lineCP);
+        vec3 nLineLightDirection = normalize(uLineLightDirection);
+        float lineLightCosThta = max(0.0,dot(someLineDir, nLineLightDirection));
+        if(lineLightCosThta>cos(radians(uLineLightCutOff/2.0) )) 
+        {
+          lineLightIntensity = lineLightCosThta;//max(dot(lineCP, nNormal), 0.0);
+        }
       }
-
-      vec3 diffuse4 = vec3(0.);
-      // if(minDistance <= uLineLightDistance) 
-      // {
-        
-      // }
-
-      // vec3 someLineDir = normalize(uSpotLightPosition - vPosition.xyz);// 计算入射光线反方向并归一化
-      // vec3 nLineLightDirection = normalize(uLineLightDirection);
       
-      // float lineLightCosThta = max(0.0,dot(-someLineDir, nLineLightDirection));// 计算入射角余弦值
-      // float diffuseIntensity = 0.0;
-      // if(lineLightCosThta>cos(radians(uLineLightCutOff/2.0) )) 
-      // {
-      //   if(dot(someLineDir,nNormal) >0.0)
-      //   {
-      //     diffuseIntensity = pow(currentCosThta,1.0);   
-      //   }
-      // }
 
-
-      // if(dot(normalize(uLineLightDirection), nNormal)>0.)
-      // {
-      //   diffuse4 = uLineLightColor * lineLightIntensity;
-      // }
-
+      vec3 diffuse4 = uLineLightColor * lineLightIntensity;
+      // gl_FragColor = vec4(diffuse4.rgb * gl_FragColor.rgb, gl_FragColor.a);
       
       //计算环境光和反射后的平行光的颜色分量之和
-      vec3 vLightWeighting = uAmbientColor.rgb + diffuse1 + diffuse2 + diffuse3+diffuse4;  
+      vec3 vLightWeighting = uAmbientColor.rgb  + diffuse3 ;//  + diffuse1 + diffuse2
 
-      gl_FragColor = vec4(vLightWeighting*gl_FragColor.rgb + specular + specular2, gl_FragColor.a);
+      vec3 litcolor = vLightWeighting*gl_FragColor.rgb + specular3;//+ specular + specular2 
+      
+      // gl_FragColor = vec4(mix( litcolor, uFogColor,fogFactor), gl_FragColor.a);
+      gl_FragColor = vec4(litcolor, 1.0);
     }
     `;
   }

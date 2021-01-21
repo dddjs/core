@@ -11,27 +11,24 @@ export class ImagesLoaded {
 
   init() {
     let tasks = this.images.length;
-    this.images.forEach(url => {
+    var r = 
+    this.images.forEach((url, ind) => {
       let image = new Image();
-      // if (image.complete) {
-      //   tasks--;
-      //   this.progress(image);
-      //   this.loadedImages.push(image)
-      //   this.check(tasks)
-      // } else {
       image.onload = () => {
         tasks--;
         this.progress(image);
-        this.loadedImages.push(image)
         this.check(tasks)
       }
-      // }
+      
       image.onerror = (e) => {
         tasks--;
         this.error(e)
         this.check(tasks)
       }
+      // image.id = 'ind'
+      this.loadedImages.push(image)
       image.src = url;
+    
     })
   }
 

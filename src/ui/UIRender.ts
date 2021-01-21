@@ -22,7 +22,7 @@ export class UIRender extends Base {
   }
 
   enableExtension(gl){
-    // gl.getExtension("OES_standard_derivatives");
+    gl.getExtension("OES_standard_derivatives");
     gl.getExtension("OES_element_index_uint");
   }
 
@@ -33,23 +33,25 @@ export class UIRender extends Base {
         glmode = gl.POINTS;
         break;
       case 'linestrip':
-        glmode = gl.LINE_STRIP;
+        glmode = gl.LINE_STRIP;//线带
         break;
       case 'lineloop':
-        glmode = gl.LINE_LOOP;
+        glmode = gl.LINE_LOOP; //线环
         break;
       case 'line':
-        glmode = gl.LINES;
+        glmode = gl.LINES;//独立线
         break;
       case 'strip':
-        glmode = gl.TRIANGLE_STRIP;
+        glmode = gl.TRIANGLE_STRIP;// 三角形扇
         break;
       case 'fan':
-        glmode = gl.TRIANGLE_FAN;
+        glmode = gl.TRIANGLE_FAN;// 三角形带
         break;
       case 'triangle':
+        glmode = gl.TRIANGLES;// 独立三角形
+        break;
       default:
-        glmode = gl.TRIANGLES;
+        glmode = gl.TRIANGLE_FAN;
         break;
     }
 
@@ -95,23 +97,41 @@ export class UIRender extends Base {
 
     material.upload(scene, camera, obj);
 
-
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ibo);
+    if(ibo) {
+      gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ibo);
+    } else {
+      // gl.bindBuffer(gl.ARRAY_BUFFER, material['config']['position']);
+    }
+    
     let drawMode = this.drawMode(material.mode, gl);
     gl.lineWidth(5);
     if (this.drawArray||obj._material.drawArray) {
       if (this.isLineMode || scene.isLineMode || ["line", 'lineloop', 'linestrip'].indexOf(material.mode)>-1 ) {
         
-        gl.drawArrays(gl.LINES, 0, 6);
+        if(["line", 'lineloop', 'linestrip'].indexOf(material.mode)>-1) {
+          gl.drawArrays(drawMode, 0, 6);
+          // gl.drawArrays(drawMode, 0, 3);
+          // gl.drawArrays(drawMode, 0, 2); // 仅画一条线
+        } else {
+          gl.drawArrays(gl.LINES, 0, 6);
+          // gl.drawArrays(gl.LINES, 0, 3);
+          // gl.drawArrays(gl.LINES, 0, 2);
+        }
+        
       } else {
         gl.drawArrays(drawMode, 0, 6);
+        // gl.drawArrays(drawMode, 0, 3);
+        // gl.drawArrays(drawMode, 0, 2);
       }
     } else {
       let type =  this.drawType(gl, obj.indices.constructor.name)
       if (this.isLineMode || scene.isLineMode || ["line", 'lineloop', 'linestrip'].indexOf(material.mode)>-1 ) {
         // debugger
-        
-        gl.drawElements(gl.LINES, obj.indices.length, type, 0);
+        if(["line", 'lineloop', 'linestrip'].indexOf(material.mode)>-1){
+          gl.drawElements(drawMode, obj.indices.length, type, 0);//
+        } else {
+          gl.drawElements(gl.LINES, obj.indices.length, type, 0);
+        }
       } else {
         gl.drawElements(drawMode, obj.indices.length, type, 0);//
       }
@@ -130,8 +150,9 @@ export class UIRender extends Base {
 
   clean(gl: WebGLRenderingContext, scene:UIScene, camera: UICamera) {
     // gl.enable(gl.CULL_FACE);
-    // gl.frontFace(gl.CW)
+    gl.frontFace(gl.CW)
     // let {clearColor} = scene;
+    // gl.disable(gl.CULL_FACE);
     
     
     if(camera.isControlled) {
@@ -153,8 +174,8 @@ export class UIRender extends Base {
     
     // gl.clearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
     // 开启隐藏面消除
-    gl.enable(gl.DEPTH_TEST);
-    gl.depthFunc(gl.LEQUAL);
+    // gl.enable(gl.DEPTH_TEST);
+    // gl.depthFunc(gl.LEQUAL);
     
     
     gl.clearDepth(1.0);
@@ -187,8 +208,8 @@ export class UIRender extends Base {
   renderScene() {
     if (!this.ctx) return;
     let gl = this.ctx;
-    // gl.enable(gl.CULL_FACE);
-    // gl.frontFace(gl.CW)
+    gl.enable(gl.CULL_FACE); // 背面踢除
+    // gl.frontFace(gl.CW); 
     this.scenes.forEach(scene=>{
       if(scene.disabled) return;
       scene.walkTree((obj) => {
@@ -201,7 +222,7 @@ export class UIRender extends Base {
           material.config['normal'] = GLTools.createVBO(gl, obj.normals||[], false, true);
         }
         if(obj.textCoords.length>0){
-          material.config['a_TextCoord'] = GLTools.createVBO(gl, obj.textCoords||[], false, true);
+          material.config['textCoord'] = GLTools.createVBO(gl, obj.textCoords||[], false, true);
         }
 
         let ibo ;

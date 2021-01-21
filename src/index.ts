@@ -32,6 +32,8 @@ export * from './tools/GLTools';
 export * from './tools/ImagesLoaded';
 
 export * from './materials/UIMaterial';
+export * from './materials/UISimpleMaterial';
+export * from './materials/UIColorMaterial';
 export * from './materials/UITextureMaterial';
 export * from './materials/UIVideoMaterial';
 export * from './materials/UICubeTextureMaterial';

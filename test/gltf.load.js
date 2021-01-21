@@ -125,7 +125,7 @@ export function load(gl, url, callback){
       curMesh.v = getData( gltf , mesh.primitives[0].attributes['POSITION']);
       curMesh.vn = getData(gltf, mesh.primitives[0].attributes['NORMAL']);
       curMesh.vt = getData( gltf, mesh.primitives[0].attributes['TEXCOORD_0']);
-      curMesh.ind =  getData( gltf, mesh.primitives[0]['indices'], 1);
+      curMesh.ind = getData( gltf, mesh.primitives[0]['indices']);
 
 
         meshes.push(curMesh)

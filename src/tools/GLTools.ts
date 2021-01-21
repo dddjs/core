@@ -54,17 +54,40 @@ export class GLTools {
       format = option.format || gl.RGBA,
       type = option.type || gl.UNSIGNED_BYTE;
 
-    let fboBuffer = gl.createFramebuffer();
+    let fboBuffer, depthBuffer, fTexture; 
+    let error = function () {
+        if (fboBuffer) {
+            gl.deleteFramebuffer(fboBuffer);
+        }
+        if (fTexture) {
+            gl.deleteTexture(fTexture);
+        }
+        if (depthBuffer) {
+            gl.deleteRenderbuffer(depthBuffer);
+        }
+        return null;
+    }
+
+    fboBuffer = gl.createFramebuffer();
+    if(!fboBuffer){
+      return error();
+    }
     gl.bindFramebuffer(gl.FRAMEBUFFER, fboBuffer);
 
     // 新建渲染缓冲区对象作为帧缓冲区的深度缓冲区对象
-    var depthBuffer = gl.createRenderbuffer();
+    depthBuffer = gl.createRenderbuffer();
+    if(!depthBuffer){
+      return error();
+    }
     gl.bindRenderbuffer(gl.RENDERBUFFER, depthBuffer);
 
     gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, width, height);
     gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, depthBuffer);
 
-    let fTexture = gl.createTexture();
+    fTexture = gl.createTexture();
+    if(!fTexture){
+      return error();
+    }
     gl.bindTexture(gl.TEXTURE_2D, fTexture);
     gl.texImage2D(gl.TEXTURE_2D, 0, format, width, height, 0, format, type, null);
 
@@ -75,12 +98,12 @@ export class GLTools {
 
     gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, fTexture, 0);
 
-
+    
     // 检测帧缓冲区对象的配置状态是否成功
     var e = gl.checkFramebufferStatus(gl.FRAMEBUFFER);
     if (gl.FRAMEBUFFER_COMPLETE !== e) {
       console.log('Frame buffer object is incomplete: ' + e.toString());
-      return null;
+      return error();
     }
 
 

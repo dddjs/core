@@ -29,7 +29,8 @@ export class UICamera extends Camera {
     // let height =2;
     // let fov = fovy(height, near);
 
-    this._projectMatrix = Mat4.perspective(60, window.innerWidth/(2*window.innerHeight), .1, 1000); // 透视投影fovy(4, 1)
+    this._projectMatrix = Mat4.perspective(60, 100/(2*100), .1, 1000); // 透视投影fovy(4, 1)
+    // this._projectMatrix = Mat4.perspective(60, window.innerWidth/(2*window.innerHeight), .1, 1000); // 透视投影fovy(4, 1)
     // this._projectMatrix = Mat4.perspective(fov, width/height, near, far, this.isRightHand); // 透视投影fovy(4, 1)
     // this._projectMatrix = Mat4.perspectiveWHNF(width, height, near, far, this.isRightHand); // 透视投影
     // this._projectMatrix = Mat4.perspectiveLRTBNF(-width/2, width/2, height/2, -height/2, near, far, this.isRightHand); // 透视投影

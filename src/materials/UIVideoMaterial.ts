@@ -1,6 +1,6 @@
 import { GLTools } from './../tools/GLTools';
 import { UIMaterial } from "./UIMaterial";
-import { ShaderChunk } from "./chunks/ShaderChunk";
+import { SimpleChunk } from "./chunks/SimpleChunk";
 import { UIScene } from '../ui/UIScene';
 
 export class UIVideoMaterial extends UIMaterial {
@@ -75,7 +75,7 @@ export class UIVideoMaterial extends UIMaterial {
     varying vec2 v_TexCoord;`,
       fragMain = "gl_FragColor = texture2D(u_Sampler, v_TexCoord);";
 
-    this.shader = new ShaderChunk(scene, vert, vertMain, frag, fragMain)
+    this.shader = new SimpleChunk(scene, vert, vertMain, frag, fragMain)
   }
 
   handle() {

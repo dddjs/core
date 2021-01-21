@@ -9,6 +9,7 @@ export class ShaderChunk {
 
   compose(scene: UIScene) {
     this.vertSource = `
+    precision highp float;
     attribute vec3 position;
     attribute vec3 normal;
     uniform mat4 Pmatrix;
