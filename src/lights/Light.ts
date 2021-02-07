@@ -37,7 +37,8 @@ constructor({name="", position=new Vec3(),  color, intensity}){
 // 环境光
 export class AmbientLight extends Light {
   constructor({color, intensity} ){
-    super({name: 'ambient-light', color, intensity})
+    super({name: 'ambient-light', color, intensity});
+    this.mType = 'AmbientLight';
   }
 
 }
@@ -49,6 +50,7 @@ export class DirectionalLight extends Light {
   public direct: Vec3;
   constructor({color, intensity, direct} ){
     super({name: 'direct-light', color, intensity})
+    this.mType = 'DirectionalLight';
     this.direct = direct;
   }
 
@@ -65,6 +67,7 @@ export class PointLight extends Light {
 // decay – 设置光的衰减量。
   constructor(color,intensity,distance, decay){
     super({name: 'point-light', color, intensity})
+    this.mType = 'PointLight';
   }
 }
 
@@ -74,6 +77,7 @@ export class SpotLight extends Light {
   // exponent – 光强在偏离目标的衰减指数
   constructor(color, intensity, distance, angle, penumbra, decay){
     super({name: 'spot-light', color, intensity})
+    this.mType = 'SpotLight';
   }
 }
 
@@ -84,6 +88,7 @@ export class HemisphericLight extends Light {
   // intensity – 光照强度。
   constructor(skyColor, groundColor, intensity){
     super({name: 'hemispheric-light', color, intensity})
+    this.mType = 'HemisphericLight';
   }
 }
 
@@ -91,5 +96,6 @@ export class HemisphericLight extends Light {
 export class AreaLight extends Light {
   constructor(){
     super({name: 'area-light'})
+    this.mType = 'AreaLight';
   }
 }

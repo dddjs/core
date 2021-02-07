@@ -63,11 +63,18 @@ export class UIScene {
   }
 
   addLight(light: Light) {
+    console.log(light.mType);
     switch(light.mType) {
-      case 'pointLight':{
-        this.pointLights.push(light);
+      case 'DirectionalLight':{
+        this.directionalLight = light;
+        
       }break;
-      case 'spotLight':{
+
+      case 'PointLight':{
+        this.pointLights.push(light);
+        
+      }break;
+      case 'SpotLight':{
         this.spotLights.push(light)
       }
     }

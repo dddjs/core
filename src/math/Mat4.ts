@@ -527,7 +527,7 @@ export class Mat4 extends Base {
       0, 0, e, 0
     ]
 
-    return mat;
+    return mat;//.transpose();
   }
 
   // 视图矩阵作用一句话简明表达就是世界坐标系转换到摄像机坐标系，所以又叫 Camera矩阵
